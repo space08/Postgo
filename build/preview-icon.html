@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PostGo Icon Preview & Generator</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            text-align: center;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            margin-bottom: 30px;
+        }
+        .preview {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        .size-preview {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .size-preview h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        canvas {
+            display: block;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        button {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .info {
+            margin-top: 30px;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 PostGo Icon</h1>
+        <p>HTTP Client Application Icon</p>
+        
+        <div class="preview" id="preview"></div>
+        
+        <div>
+            <button onclick="downloadPNG(512)">Download 512x512 PNG</button>
+            <button onclick="downloadPNG(256)">Download 256x256 PNG</button>
+            <button onclick="downloadPNG(128)">Download 128x128 PNG</button>
+        </div>
+        
+        <div class="info">
+            <p>Created with modern gradient design</p>
+            <p>Paper plane symbolizes sending HTTP requests</p>
+            <p>Code brackets represent API/HTTP development</p>
+        </div>
+    </div>
+
+    <script>
+        const svgString = `<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="planeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f0f4ff;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <rect width="512" height="512" rx="120" fill="url(#bgGradient)"/>
+  
+  <g transform="translate(120, 120)" filter="url(#shadow)">
+    <path d="M 30 140 L 260 10 L 260 110 L 100 180 Z" 
+          fill="url(#planeGradient)" 
+          opacity="0.95"/>
+    
+    <path d="M 30 140 L 100 180 L 80 240 Z" 
+          fill="url(#planeGradient)" 
+          opacity="0.85"/>
+    
+    <line x1="10" y1="130" x2="60" y2="145" 
+          stroke="#ffffff" 
+          stroke-width="4" 
+          stroke-linecap="round" 
+          opacity="0.5"/>
+    <line x1="0" y1="150" x2="50" y2="155" 
+          stroke="#ffffff" 
+          stroke-width="4" 
+          stroke-linecap="round" 
+          opacity="0.4"/>
+    <line x1="5" y1="170" x2="45" y2="170" 
+          stroke="#ffffff" 
+          stroke-width="4" 
+          stroke-linecap="round" 
+          opacity="0.3"/>
+  </g>
+  
+  <g transform="translate(320, 350)" opacity="0.8">
+    <text font-family="monospace" 
+          font-size="48" 
+          font-weight="bold" 
+          fill="#ffffff">
+      &lt;/&gt;
+    </text>
+  </g>
+  
+  <circle cx="380" cy="130" r="12" fill="#ffffff" opacity="0.4"/>
+  <circle cx="420" cy="160" r="8" fill="#ffffff" opacity="0.3"/>
+  <circle cx="140" cy="380" r="10" fill="#ffffff" opacity="0.35"/>
+</svg>`;
+
+        const sizes = [512, 256, 128];
+        
+        sizes.forEach(size => {
+            const div = document.createElement('div');
+            div.className = 'size-preview';
+            
+            const title = document.createElement('h3');
+            title.textContent = `${size}x${size}`;
+            div.appendChild(title);
+            
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            div.appendChild(canvas);
+            
+            document.getElementById('preview').appendChild(div);
+            
+            renderSVG(canvas, size);
+        });
+
+        function renderSVG(canvas, size) {
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+            const blob = new Blob([svgString], {type: 'image/svg+xml'});
+            const url = URL.createObjectURL(blob);
+            
+            img.onload = function() {
+                ctx.drawImage(img, 0, 0, size, size);
+                URL.revokeObjectURL(url);
+            };
+            img.src = url;
+        }
+
+        function downloadPNG(size) {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            
+            const img = new Image();
+            const blob = new Blob([svgString], {type: 'image/svg+xml'});
+            const url = URL.createObjectURL(blob);
+            
+            img.onload = function() {
+                ctx.drawImage(img, 0, 0, size, size);
+                
+                canvas.toBlob(function(blob) {
+                    const link = document.createElement('a');
+                    link.download = `postgo-icon-${size}x${size}.png`;
+                    link.href = URL.createObjectURL(blob);
+                    link.click();
+                    URL.revokeObjectURL(url);
+                }, 'image/png');
+            };
+            img.src = url;
+        }
+    </script>
+</body>
+</html>
