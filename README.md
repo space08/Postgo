@@ -74,7 +74,7 @@
 go install github.com/wailsapp/wails/v2/cmd/wails@latest
 
 # 克隆仓库
-git clone https://github.com/yourusername/postgo.git
+git clone https://github.com/space08/postgo.git
 cd postgo/postgo
 
 # 构建应用
