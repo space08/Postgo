@@ -7,7 +7,7 @@
 ![Wails Version](https://img.shields.io/badge/Wails-v2.11.0-00ADD8)
 ![React](https://img.shields.io/badge/React-18-61DAFB?logo=react)
 
-![img='screenshot](https://raw.githubusercontent.com/space08/postgo/master/screenshots/01.png)']
+![img='screenshot]([https://github.com/space08/postgo/master/screenshots/01.png)']
 ## ✨ 功能特性
 
 ### 核心功能
