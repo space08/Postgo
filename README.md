@@ -434,6 +434,7 @@ wails build -platform windows/amd64,linux/amd64,darwin/amd64
 
 - 问题反馈：[GitHub Issues](https://github.com/yourusername/postgo/issues)
 - 功能建议：[GitHub Discussions](https://github.com/yourusername/postgo/discussions)
+- QQ: 1478431121
 
 ---
 
