@@ -138,6 +138,10 @@ export function SearchHistory(arg1) {
   return window['go']['main']['App']['SearchHistory'](arg1);
 }
 
+export function SelectFile() {
+  return window['go']['main']['App']['SelectFile']();
+}
+
 export function SendRequest(arg1) {
   return window['go']['main']['App']['SendRequest'](arg1);
 }

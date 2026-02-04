@@ -47,6 +47,13 @@ func (s *TokenStorage) SaveToken(token Token) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
+	encryptedValue, err := Encrypt(token.Value)
+	if err != nil {
+		LogWarn("Failed to encrypt token value, saving as plaintext: %v", err)
+		encryptedValue = token.Value
+	}
+	token.Value = encryptedValue
+
 	found := false
 	for i, t := range s.tokens {
 		if t.ID == token.ID {
@@ -64,7 +71,7 @@ func (s *TokenStorage) SaveToken(token Token) error {
 		s.tokens = append(s.tokens, token)
 	}
 
-	err := s.save()
+	err = s.save()
 	if err != nil {
 		return fmt.Errorf("failed to save token: %w", err)
 	}
@@ -77,7 +84,15 @@ func (s *TokenStorage) GetAllTokens() []Token {
 	defer s.mu.RUnlock()
 
 	result := make([]Token, len(s.tokens))
-	copy(result, s.tokens)
+	for i, token := range s.tokens {
+		decryptedValue, err := Decrypt(token.Value)
+		if err != nil {
+			LogWarn("Failed to decrypt token %s, using encrypted value: %v", token.ID, err)
+			decryptedValue = token.Value
+		}
+		token.Value = decryptedValue
+		result[i] = token
+	}
 
 	sort.Slice(result, func(i, j int) bool {
 		return result[i].UpdatedAt.After(result[j].UpdatedAt)
@@ -92,6 +107,12 @@ func (s *TokenStorage) GetToken(id string) *Token {
 
 	for _, token := range s.tokens {
 		if token.ID == id {
+			decryptedValue, err := Decrypt(token.Value)
+			if err != nil {
+				LogWarn("Failed to decrypt token %s, using encrypted value: %v", token.ID, err)
+				decryptedValue = token.Value
+			}
+			token.Value = decryptedValue
 			return &token
 		}
 	}

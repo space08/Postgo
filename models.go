@@ -15,9 +15,11 @@ const (
 )
 
 type KeyValue struct {
-	Key     string `json:"key"`
-	Value   string `json:"value"`
-	Enabled bool   `json:"enabled"`
+	Key      string `json:"key"`
+	Value    string `json:"value"`
+	Enabled  bool   `json:"enabled"`
+	Type     string `json:"type,omitempty"`     // "text" or "file"
+	FilePath string `json:"filePath,omitempty"` // path to file for file type
 }
 
 type BodyType string

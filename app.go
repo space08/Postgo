@@ -23,35 +23,45 @@ type App struct {
 	activeEnvironment  string
 }
 
-func NewApp() *App {
+func NewApp() (*App, error) {
+	if err := InitLogger(INFO); err != nil {
+		return nil, fmt.Errorf("failed to initialize logger: %w", err)
+	}
+
 	historyStorage, err := NewHistoryStorage()
 	if err != nil {
-		panic(fmt.Sprintf("Failed to initialize history storage: %v", err))
+		LogError("Failed to initialize history storage: %v", err)
+		return nil, fmt.Errorf("failed to initialize history storage: %w", err)
 	}
 
 	projectStorage, err := NewProjectStorage()
 	if err != nil {
-		panic(fmt.Sprintf("Failed to initialize project storage: %v", err))
+		LogError("Failed to initialize project storage: %v", err)
+		return nil, fmt.Errorf("failed to initialize project storage: %w", err)
 	}
 
 	tokenStorage, err := NewTokenStorage()
 	if err != nil {
-		panic(fmt.Sprintf("Failed to initialize token storage: %v", err))
+		LogError("Failed to initialize token storage: %v", err)
+		return nil, fmt.Errorf("failed to initialize token storage: %w", err)
 	}
 
 	requestStorage, err := NewRequestStorage()
 	if err != nil {
-		panic(fmt.Sprintf("Failed to initialize request storage: %v", err))
+		LogError("Failed to initialize request storage: %v", err)
+		return nil, fmt.Errorf("failed to initialize request storage: %w", err)
 	}
 
 	environmentStorage, err := NewEnvironmentStorage()
 	if err != nil {
-		panic(fmt.Sprintf("Failed to initialize environment storage: %v", err))
+		LogError("Failed to initialize environment storage: %v", err)
+		return nil, fmt.Errorf("failed to initialize environment storage: %w", err)
 	}
 
 	tabStorage, err := NewTabStorage()
 	if err != nil {
-		panic(fmt.Sprintf("Failed to initialize tab storage: %v", err))
+		LogError("Failed to initialize tab storage: %v", err)
+		return nil, fmt.Errorf("failed to initialize tab storage: %w", err)
 	}
 
 	// Migration: specific project requests from history to request storage if empty
@@ -77,7 +87,7 @@ func NewApp() *App {
 		}
 		if len(toSave) > 0 {
 			requestStorage.AddRequests(toSave)
-			fmt.Printf("Migrated %d requests from history to request storage\n", len(toSave))
+			LogInfo("Migrated %d requests from history to request storage", len(toSave))
 		}
 	}
 
@@ -100,9 +110,9 @@ func NewApp() *App {
 	}
 	if cleanCount > 0 {
 		if err := requestStorage.save(); err != nil {
-			fmt.Printf("Failed to save cleaned requests: %v\n", err)
+			LogError("Failed to save cleaned requests: %v", err)
 		} else {
-			fmt.Printf("Cleaned Base URL from %d requests\n", cleanCount)
+			LogInfo("Cleaned Base URL from %d requests", cleanCount)
 		}
 	}
 
@@ -117,7 +127,8 @@ func NewApp() *App {
 		activeEnvironment:  environmentStorage.GetActiveEnvironmentID(),
 	}
 	
-	return app
+	LogInfo("Application initialized successfully")
+	return app, nil
 }
 
 func (a *App) startup(ctx context.Context) {
@@ -132,7 +143,7 @@ func (a *App) SendRequest(req HttpRequest) (*HttpResponse, error) {
 	if processedReq.Scripts != nil && processedReq.Scripts.PreRequest != "" {
 		_, err := scriptRunner.RunPreRequestScript(&processedReq)
 		if err != nil {
-			fmt.Printf("Pre-request script error: %v\n", err)
+			LogWarn("Pre-request script error: %v", err)
 		}
 	}
 	
@@ -158,7 +169,7 @@ func (a *App) SendRequest(req HttpRequest) (*HttpResponse, error) {
 	if processedReq.Scripts != nil && processedReq.Scripts.PostRequest != "" {
 		scriptResult, err := scriptRunner.RunPostRequestScript(&processedReq, resp)
 		if err != nil {
-			fmt.Printf("Post-request script error: %v\n", err)
+			LogWarn("Post-request script error: %v", err)
 		}
 		resp.ScriptResult = scriptResult
 	}
@@ -170,7 +181,7 @@ func (a *App) SendRequest(req HttpRequest) (*HttpResponse, error) {
 	}
 
 	if err := a.historyStorage.AddRecord(record); err != nil {
-		fmt.Printf("Failed to save history: %v\n", err)
+		LogError("Failed to save history: %v", err)
 	}
 
 	return resp, nil
@@ -193,19 +204,19 @@ func (a *App) ClearHistory() error {
 }
 
 func (a *App) CreateProject(project Project) error {
-	fmt.Printf("Creating project: %+v\n", project)
+	LogInfo("Creating project: %s", project.Name)
 	err := a.projectStorage.CreateProject(project)
 	if err != nil {
-		fmt.Printf("Error creating project: %v\n", err)
+		LogError("Error creating project: %v", err)
 		return err
 	}
-	fmt.Printf("Project created successfully: %s\n", project.ID)
+	LogInfo("Project created successfully: %s", project.ID)
 	return nil
 }
 
 func (a *App) GetAllProjects() []Project {
 	projects := a.projectStorage.GetAllProjects()
-	fmt.Printf("GetAllProjects returning %d projects\n", len(projects))
+	LogDebug("GetAllProjects returning %d projects", len(projects))
 	return projects
 }
 
@@ -416,7 +427,8 @@ func (a *App) ExportAllData() (string, error) {
 	return path, nil
 }
 
-func (a *App) ImportAllData() error {
+
+func (a *App) ImportAllData() (string, error) {
 	path, err := runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{
 		Title: "Import Backup Data",
 		Filters: []runtime.FileFilter{
@@ -425,52 +437,64 @@ func (a *App) ImportAllData() error {
 	})
 
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	if path == "" {
-		return nil
+		return "", nil
 	}
 
 	data, err := os.ReadFile(path)
 	if err != nil {
-		return fmt.Errorf("failed to read backup file: %w", err)
+		return "", fmt.Errorf("failed to read backup file: %w", err)
 	}
 
 	var backup BackupData
 	if err := json.Unmarshal(data, &backup); err != nil {
-		return fmt.Errorf("failed to parse backup data: %w", err)
+		return "", fmt.Errorf("failed to parse backup data: %w", err)
 	}
 
 	for _, proj := range backup.Projects {
 		if err := a.projectStorage.CreateProject(proj); err != nil {
-			fmt.Printf("Warning: failed to import project %s: %v\n", proj.Name, err)
+			LogWarn("Failed to import project %s: %v", proj.Name, err)
 		}
 	}
 
 	for _, req := range backup.Requests {
 		if err := a.requestStorage.AddRequest(req); err != nil {
-			fmt.Printf("Warning: failed to import request: %v\n", err)
+			LogWarn("Failed to import request: %v", err)
 		}
 	}
 
 	for _, token := range backup.Tokens {
 		if err := a.tokenStorage.SaveToken(token); err != nil {
-			fmt.Printf("Warning: failed to import token %s: %v\n", token.Name, err)
+			LogWarn("Failed to import token %s: %v", token.Name, err)
 		}
 	}
 
 	for _, env := range backup.Environments {
 		if err := a.environmentStorage.SaveEnvironment(env); err != nil {
-			fmt.Printf("Warning: failed to import environment %s: %v\n", env.Name, err)
+			LogWarn("Failed to import environment %s: %v", env.Name, err)
 		}
 	}
 
 	if len(backup.Tabs) > 0 {
 		if err := a.tabStorage.SaveTabs(backup.Tabs); err != nil {
-			fmt.Printf("Warning: failed to import tabs: %v\n", err)
+			LogWarn("Failed to import tabs: %v", err)
 		}
 	}
 
-	return nil
+	LogInfo("Data import completed successfully")
+
+	return path, nil
+}
+
+func (a *App) SelectFile() (string, error) {
+	path, err := runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{
+		Title: "Select File to Upload",
+	})
+	if err != nil {
+		return "", err
+	}
+	return path, nil
 }

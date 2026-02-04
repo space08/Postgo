@@ -22,4 +22,6 @@ export interface Tab {
   request: HttpRequest;
   response?: HttpResponse;
   error?: string;
+  pathParams?: { [key: string]: string };
+  pathParamOrder?: string[];
 }

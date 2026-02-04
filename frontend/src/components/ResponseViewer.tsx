@@ -9,7 +9,7 @@ interface ResponseViewerProps {
 }
 
 type TabType = 'body' | 'headers' | 'cookies' | 'tests';
-type ViewMode = 'formatted' | 'raw';
+type ViewMode = 'formatted' | 'raw' | 'preview';
 
 export default function ResponseViewer({ response, loading, error }: ResponseViewerProps) {
   const [activeTab, setActiveTab] = useState<TabType>('body');
@@ -209,6 +209,16 @@ export default function ResponseViewer({ response, loading, error }: ResponseVie
               >
                 Raw
               </button>
+              <button
+                onClick={() => setViewMode('preview')}
+                className={`px-3 py-1 text-xs rounded ${
+                  viewMode === 'preview'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+                }`}
+              >
+                Preview
+              </button>
             </div>
           )}
         </div>
@@ -217,9 +227,19 @@ export default function ResponseViewer({ response, loading, error }: ResponseVie
       <div className="flex-1 overflow-hidden p-4">
         <div className="h-full overflow-y-auto">
           {activeTab === 'body' && (
-            <pre className="bg-gray-800 p-4 rounded text-sm text-gray-200 overflow-x-auto">
-              {formatBody(response.body)}
-            </pre>
+            viewMode === 'preview' ? (
+              <div className="bg-gray-800 rounded h-full min-h-[300px]">
+                <iframe
+                  className="w-full h-[60vh] bg-white rounded"
+                  sandbox=""
+                  srcDoc={response.body}
+                />
+              </div>
+            ) : (
+              <pre className="bg-gray-800 p-4 rounded text-sm text-gray-200 overflow-x-auto">
+                {formatBody(response.body)}
+              </pre>
+            )
           )}
 
           {activeTab === 'headers' && (

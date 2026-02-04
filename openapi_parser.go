@@ -70,6 +70,7 @@ type Response struct {
 
 type Schema struct {
 	Type       string             `json:"type,omitempty" yaml:"type,omitempty"`
+	Format     string             `json:"format,omitempty" yaml:"format,omitempty"`
 	Properties map[string]*Schema `json:"properties,omitempty" yaml:"properties,omitempty"`
 	Items      *Schema            `json:"items,omitempty" yaml:"items,omitempty"`
 }
@@ -125,7 +126,6 @@ func ConvertOpenAPIToRequests(spec *OpenAPISpec, projectId string, baseURL strin
 				Headers:   []KeyValue{},
 				Params:    []KeyValue{},
 				ProjectId: projectId,
-				Body:      &RequestBody{Type: "raw"},
 			}
 
 			if req.Name == "" {
@@ -162,13 +162,20 @@ func ConvertOpenAPIToRequests(spec *OpenAPISpec, projectId string, baseURL strin
 						if req.Body == nil {
 							req.Body = &RequestBody{}
 						}
-						req.Body.Type = "raw"
+						req.Body.Type = "json"
 						req.Body.Content = generateJSONExample(mediaType.Schema)
-					} else if strings.Contains(contentType, "form") {
+					} else if strings.Contains(contentType, "multipart/form-data") {
 						if req.Body == nil {
 							req.Body = &RequestBody{}
 						}
 						req.Body.Type = "form-data"
+						req.Body.FormData = generateFormDataFields(mediaType.Schema)
+					} else if strings.Contains(contentType, "x-www-form-urlencoded") {
+						if req.Body == nil {
+							req.Body = &RequestBody{}
+						}
+						req.Body.Type = "x-www-form-urlencoded"
+						req.Body.FormData = generateFormDataFields(mediaType.Schema)
 					}
 				}
 			}
@@ -195,6 +202,33 @@ func generateJSONExample(schema *Schema) string {
 	}
 
 	return "{}"
+}
+
+func generateFormDataFields(schema *Schema) []KeyValue {
+	var fields []KeyValue
+	
+	if schema == nil || schema.Properties == nil {
+		return fields
+	}
+	
+	for key, prop := range schema.Properties {
+		field := KeyValue{
+			Key:     key,
+			Value:   "",
+			Enabled: true,
+		}
+		
+		if prop.Format == "binary" || (prop.Type == "string" && prop.Format == "binary") {
+			field.Type = "file"
+			field.FilePath = ""
+		} else {
+			field.Type = "text"
+		}
+		
+		fields = append(fields, field)
+	}
+	
+	return fields
 }
 
 func ReadFileContent(reader io.Reader) ([]byte, error) {

@@ -289,7 +289,10 @@ function App() {
 
   const handleImportData = async () => {
     try {
-      await ImportAllData();
+      const path = await ImportAllData();
+      if (!path) {
+        return;
+      }
       alert('数据导入成功！正在刷新...');
       window.location.reload();
     } catch (err) {
@@ -417,7 +420,29 @@ function App() {
     ));
     
     try {
-      const response: HttpResponse = await SendRequest(activeTab.request);
+      let requestToSend = activeTab.request;
+      
+      let url = activeTab.request.url;
+      url = url.replace(/\/\{[^}]+\}/g, '');
+      
+      if (activeTab.pathParams && activeTab.pathParamOrder && activeTab.pathParamOrder.length > 0) {
+        const pathValues = activeTab.pathParamOrder
+          .map(key => activeTab.pathParams![key])
+          .filter(v => v);
+        
+        if (pathValues.length > 0) {
+          url = url + '/' + pathValues.join('/');
+        }
+      }
+      
+      if (url !== activeTab.request.url || activeTab.pathParams) {
+        requestToSend = new main.HttpRequest({
+          ...activeTab.request,
+          url: url
+        });
+      }
+      
+      const response: HttpResponse = await SendRequest(requestToSend);
       
       setTabs(tabs.map(tab =>
         tab.id === activeTabId
@@ -635,6 +660,15 @@ function App() {
                 onSend={handleSend}
                 onSave={handleSaveRequest}
                 tokens={tokens}
+                pathParams={activeTab.pathParams || {}}
+                pathParamOrder={activeTab.pathParamOrder || []}
+                onPathParamsChange={(params, order) => {
+                  setTabs(tabs.map(tab =>
+                    tab.id === activeTabId
+                      ? { ...tab, pathParams: params, pathParamOrder: order }
+                      : tab
+                  ));
+                }}
               />
             )}
           </div>

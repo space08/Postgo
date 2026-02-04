@@ -1,4 +1,4 @@
-import { X, Send } from 'lucide-react';
+import { X, Send, Github } from 'lucide-react';
 
 interface AboutDialogProps {
   onClose: () => void;
@@ -36,7 +36,7 @@ export default function AboutDialog({ onClose }: AboutDialogProps) {
           <div className="bg-gray-700 rounded-lg p-4 space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-gray-400">版本号：</span>
-              <span className="text-white font-mono">v1.0.1</span>
+              <span className="text-white font-mono">v1.0.4</span>
             </div>
             <div className="border-t border-gray-600"></div>
             <div className="flex justify-between items-center">
@@ -47,6 +47,19 @@ export default function AboutDialog({ onClose }: AboutDialogProps) {
             <div className="flex justify-between items-center">
               <span className="text-gray-400">开发框架：</span>
               <span className="text-white">Wails + React</span>
+            </div>
+            <div className="border-t border-gray-600"></div>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-400">项目地址：</span>
+              <a 
+                href="https://github.com/space08/Postgo" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-blue-400 hover:text-blue-300 flex items-center gap-1 transition-colors"
+              >
+                <Github size={16} />
+                GitHub
+              </a>
             </div>
           </div>
 

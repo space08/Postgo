@@ -8,6 +8,8 @@ import (
 	"mime/multipart"
 	"net/http"
 	"net/url"
+	"os"
+	"path/filepath"
 	"strings"
 	"time"
 )
@@ -27,7 +29,8 @@ func NewHttpClient() *HttpClient {
 func (h *HttpClient) SendRequest(req HttpRequest) (*HttpResponse, error) {
 	startTime := time.Now()
 
-	fullURL, err := h.buildURL(req.URL, req.Params)
+	trimmedURL := strings.TrimSpace(req.URL)
+	fullURL, err := h.buildURL(trimmedURL, req.Params)
 	if err != nil {
 		return nil, err
 	}
@@ -50,10 +53,18 @@ func (h *HttpClient) SendRequest(req HttpRequest) (*HttpResponse, error) {
 		h.applyAuth(httpReq, req.Auth)
 	}
 
+	hasUserAgent := false
 	for _, header := range req.Headers {
 		if header.Enabled {
 			httpReq.Header.Set(header.Key, header.Value)
+			if strings.EqualFold(header.Key, "User-Agent") {
+				hasUserAgent = true
+			}
 		}
+	}
+
+	if !hasUserAgent {
+		httpReq.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
 	}
 
 	resp, err := h.client.Do(httpReq)
@@ -177,9 +188,34 @@ func (h *HttpClient) buildRequestBody(body *RequestBody) (io.Reader, string, err
 		writer := multipart.NewWriter(&buf)
 		for _, field := range body.FormData {
 			if field.Enabled {
-				err := writer.WriteField(field.Key, field.Value)
-				if err != nil {
-					return nil, "", err
+				if field.Type == "file" && field.FilePath != "" {
+					// Handle file upload
+					file, err := os.Open(field.FilePath)
+					if err != nil {
+						return nil, "", fmt.Errorf("failed to open file %s: %w", field.FilePath, err)
+					}
+					defer file.Close()
+					
+					// Get file name from path
+					fileName := filepath.Base(field.FilePath)
+					
+					// Create form file
+					part, err := writer.CreateFormFile(field.Key, fileName)
+					if err != nil {
+						return nil, "", err
+					}
+					
+					// Copy file content to form
+					_, err = io.Copy(part, file)
+					if err != nil {
+						return nil, "", err
+					}
+				} else {
+					// Handle text field
+					err := writer.WriteField(field.Key, field.Value)
+					if err != nil {
+						return nil, "", err
+					}
 				}
 			}
 		}

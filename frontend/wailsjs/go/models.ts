@@ -296,6 +296,8 @@ export namespace main {
 	    key: string;
 	    value: string;
 	    enabled: boolean;
+	    type?: string;
+	    filePath?: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new KeyValue(source);
@@ -306,6 +308,8 @@ export namespace main {
 	        this.key = source["key"];
 	        this.value = source["value"];
 	        this.enabled = source["enabled"];
+	        this.type = source["type"];
+	        this.filePath = source["filePath"];
 	    }
 	}
 	export class HttpRequest {

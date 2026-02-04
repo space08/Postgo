@@ -1,8 +1,8 @@
-import { Send, Plus, Trash2, Key, Save } from 'lucide-react';
+import { Send, Plus, Trash2, Key, Save, Upload } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { HttpRequest, HttpMethod, KeyValue, Token } from '../types';
 import { main } from '../../wailsjs/go/models';
-import { StartOAuth2Flow, ExchangeOAuth2Code, GetOAuth2ClientCredentialsToken, GetOAuth2PasswordToken, RefreshOAuth2Token } from '../../wailsjs/go/main/App';
+import { StartOAuth2Flow, ExchangeOAuth2Code, GetOAuth2ClientCredentialsToken, GetOAuth2PasswordToken, RefreshOAuth2Token, SelectFile } from '../../wailsjs/go/main/App';
 
 interface RequestEditorProps {
   request: HttpRequest;
@@ -10,6 +10,9 @@ interface RequestEditorProps {
   onSend: () => void;
   onSave?: () => void;
   tokens?: Token[];
+  pathParams?: { [key: string]: string };
+  pathParamOrder?: string[];
+  onPathParamsChange?: (params: { [key: string]: string }, order: string[]) => void;
 }
 
 const HTTP_METHODS: HttpMethod[] = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS'];
@@ -49,23 +52,47 @@ const COMMON_HEADERS = [
   'Warning',
 ];
 
+const USER_AGENTS = [
+  { name: 'Chrome (Windows)', value: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36' },
+  { name: 'Chrome (macOS)', value: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36' },
+  { name: 'Firefox (Windows)', value: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0' },
+  { name: 'Firefox (macOS)', value: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:121.0) Gecko/20100101 Firefox/121.0' },
+  { name: 'Safari (macOS)', value: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Safari/605.1.15' },
+  { name: 'Edge (Windows)', value: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0' },
+  { name: 'Safari (iOS)', value: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Mobile/15E148 Safari/604.1' },
+  { name: 'Chrome (Android)', value: 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36' },
+];
+
 type RequestTabType = 'params' | 'headers' | 'body' | 'auth' | 'scripts';
 
-export default function RequestEditor({ request, onRequestChange, onSend, onSave, tokens = [] }: RequestEditorProps) {
+export default function RequestEditor({ request, onRequestChange, onSend, onSave, tokens = [], pathParams: externalPathParams = {}, pathParamOrder = [], onPathParamsChange }: RequestEditorProps) {
   const [activeTab, setActiveTab] = useState<RequestTabType>('params');
   const [headerSuggestions, setHeaderSuggestions] = useState<string[]>([]);
   const [activeHeaderIndex, setActiveHeaderIndex] = useState<number>(-1);
   const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState<number>(0);
   const suggestionsRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (activeTab === 'body' && 
-        request.method !== 'POST' && 
-        request.method !== 'PUT' && 
-        request.method !== 'PATCH') {
-      setActiveTab('params');
+  const extractPathParams = (url: string): { names: string[], baseUrl: string } => {
+    const matches = url.match(/\{([^}]+)\}/g);
+    if (!matches || matches.length === 0) {
+      return { names: [], baseUrl: url };
     }
-  }, [request.method, activeTab]);
+    
+    const names = matches.map(match => match.slice(1, -1));
+    const baseUrl = url.replace(/\/\{[^}]+\}/g, '');
+    
+    return { names, baseUrl };
+  };
+
+  const { names: pathParamNames, baseUrl } = extractPathParams(request.url);
+  const currentOrder = pathParamOrder.length > 0 ? pathParamOrder : pathParamNames;
+  const pathParamsArray = currentOrder.map(name => ({
+    key: name,
+    value: externalPathParams[name] || '',
+    enabled: true,
+    type: 'text'
+  }));
+
   const updateHeaders = (headers: KeyValue[]) => {
     const updated = new main.HttpRequest(request);
     updated.headers = headers;
@@ -77,6 +104,38 @@ export default function RequestEditor({ request, onRequestChange, onSend, onSave
     updated.params = params;
     onRequestChange(updated);
   };
+
+  const displayHeaders = (() => {
+    const hasUserAgent = request.headers.some(h => h.key === 'User-Agent');
+    if (!hasUserAgent) {
+      return [...request.headers, new main.KeyValue({ 
+        key: 'User-Agent', 
+        value: USER_AGENTS[0].value,
+        enabled: true 
+      })];
+    }
+    return request.headers;
+  })();
+
+  const syncDisplayHeadersToRequest = () => {
+    const hasUserAgent = request.headers.some(h => h.key === 'User-Agent');
+    if (!hasUserAgent && displayHeaders.length > request.headers.length) {
+      updateHeaders(displayHeaders);
+    }
+  };
+
+  useEffect(() => {
+    syncDisplayHeadersToRequest();
+  }, [activeTab]);
+
+  useEffect(() => {
+    if (activeTab === 'body' && 
+        request.method !== 'POST' && 
+        request.method !== 'PUT' && 
+        request.method !== 'PATCH') {
+      setActiveTab('params');
+    }
+  }, [request.method, activeTab]);
 
   const addHeader = () => {
     updateHeaders([...request.headers, new main.KeyValue({ key: '', value: '', enabled: true })]);
@@ -107,6 +166,23 @@ export default function RequestEditor({ request, onRequestChange, onSend, onSave
     }
   };
 
+  const insertUserAgent = (userAgent: string) => {
+    const existingIndex = request.headers.findIndex(h => h.key === 'User-Agent');
+    
+    if (existingIndex >= 0) {
+      const newHeaders = [...request.headers];
+      newHeaders[existingIndex].value = userAgent;
+      newHeaders[existingIndex].enabled = true;
+      updateHeaders(newHeaders);
+    } else {
+      updateHeaders([...request.headers, new main.KeyValue({ 
+        key: 'User-Agent', 
+        value: userAgent, 
+        enabled: true 
+      })]);
+    }
+  };
+
   const addParam = () => {
     updateParams([...request.params, new main.KeyValue({ key: '', value: '', enabled: true })]);
   };
@@ -119,26 +195,10 @@ export default function RequestEditor({ request, onRequestChange, onSend, onSave
     updateParams([]);
   };
 
-  const handleHeaderKeyChange = (index: number, value: string) => {
-    const newHeaders = [...request.headers];
-    newHeaders[index].key = value;
-    updateHeaders(newHeaders);
 
-    if (value.trim()) {
-      const filtered = COMMON_HEADERS.filter(h => 
-        h.toLowerCase().startsWith(value.toLowerCase())
-      );
-      setHeaderSuggestions(filtered);
-      setActiveHeaderIndex(index);
-      setSelectedSuggestionIndex(0);
-    } else {
-      setHeaderSuggestions([]);
-      setActiveHeaderIndex(-1);
-    }
-  };
 
   const selectHeaderSuggestion = (index: number, suggestion: string) => {
-    const newHeaders = [...request.headers];
+    const newHeaders = [...displayHeaders];
     newHeaders[index].key = suggestion;
     updateHeaders(newHeaders);
     setHeaderSuggestions([]);
@@ -180,11 +240,15 @@ export default function RequestEditor({ request, onRequestChange, onSend, onSave
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const handleSend = () => {
+    onSend();
+  };
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
         e.preventDefault();
-        onSend();
+        handleSend();
       }
       if ((e.ctrlKey || e.metaKey) && e.key === 's') {
         e.preventDefault();
@@ -223,11 +287,23 @@ export default function RequestEditor({ request, onRequestChange, onSend, onSave
               updated.url = e.target.value;
               onRequestChange(updated);
             }}
+            onBlur={(e) => {
+              const url = e.target.value;
+              const { names, baseUrl } = extractPathParams(url);
+              
+              if (names.length > 0 && onPathParamsChange) {
+                const newParams: { [key: string]: string } = {};
+                names.forEach(name => {
+                  newParams[name] = externalPathParams[name] || '';
+                });
+                onPathParamsChange(newParams, names);
+              }
+            }}
             placeholder="Enter request URL"
             className="flex-1 px-3 py-2 bg-gray-800 border border-gray-700 rounded text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <button
-            onClick={onSend}
+            onClick={handleSend}
             className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded flex items-center gap-2"
           >
             <Send size={18} />
@@ -305,72 +381,110 @@ export default function RequestEditor({ request, onRequestChange, onSend, onSave
       <div className="flex-1 overflow-hidden p-4">
         <div className="h-full overflow-y-auto">
           {activeTab === 'params' && (
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-medium text-gray-300">Query Parameters</h3>
-                <div className="flex gap-2">
-                  <button
-                    onClick={addParam}
-                    className="text-blue-500 hover:text-blue-400 text-sm flex items-center gap-1"
-                  >
-                    <Plus size={16} />
-                    Add
-                  </button>
-                  {request.params.length > 0 && (
+            <div className="space-y-6">
+              {pathParamsArray.length > 0 && (
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-sm font-medium text-gray-300">Path Parameters</h3>
+                  </div>
+                  <div className="space-y-2">
+                    {pathParamsArray.map((param: any, index: number) => (
+                      <div key={index} className="flex gap-2 items-center">
+                        <div className="w-4 h-4"></div>
+                        <input
+                          type="text"
+                          value={param.key}
+                          readOnly
+                          className="flex-1 px-2 py-1 bg-gray-900 border border-gray-700 rounded text-gray-400 text-sm cursor-not-allowed"
+                        />
+                        <input
+                          type="text"
+                          value={param.value}
+                          onChange={(e) => {
+                            if (onPathParamsChange) {
+                              onPathParamsChange({
+                                ...externalPathParams,
+                                [param.key]: e.target.value
+                              }, currentOrder);
+                            }
+                          }}
+                          placeholder="Value"
+                          className="flex-1 px-2 py-1 bg-gray-800 border border-gray-700 rounded text-white text-sm"
+                        />
+                        <div className="w-6 h-6"></div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-medium text-gray-300">Query Parameters</h3>
+                  <div className="flex gap-2">
                     <button
-                      onClick={deleteAllParams}
-                      className="text-red-500 hover:text-red-400 text-sm flex items-center gap-1"
+                      onClick={addParam}
+                      className="text-blue-500 hover:text-blue-400 text-sm flex items-center gap-1"
                     >
-                      <Trash2 size={16} />
-                      Delete All
+                      <Plus size={16} />
+                      Add
                     </button>
-                  )}
+                    {request.params.length > 0 && (
+                      <button
+                        onClick={deleteAllParams}
+                        className="text-red-500 hover:text-red-400 text-sm flex items-center gap-1"
+                      >
+                        <Trash2 size={16} />
+                        Delete All
+                      </button>
+                    )}
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  {request.params.map((param: any, index: number) => (
+                    <div key={index} className="flex gap-2 items-center">
+                      <input
+                        type="checkbox"
+                        checked={param.enabled}
+                        onChange={(e) => {
+                          const newParams = [...request.params];
+                          newParams[index].enabled = e.target.checked;
+                          updateParams(newParams);
+                        }}
+                        className="w-4 h-4"
+                      />
+                      <input
+                        type="text"
+                        value={param.key}
+                        onChange={(e) => {
+                          const newParams = [...request.params];
+                          newParams[index].key = e.target.value;
+                          updateParams(newParams);
+                        }}
+                        placeholder="Key"
+                        className="flex-1 px-2 py-1 bg-gray-800 border border-gray-700 rounded text-white text-sm"
+                      />
+                      <input
+                        type="text"
+                        value={param.value}
+                        onChange={(e) => {
+                          const newParams = [...request.params];
+                          newParams[index].value = e.target.value;
+                          updateParams(newParams);
+                        }}
+                        placeholder="Value"
+                        className="flex-1 px-2 py-1 bg-gray-800 border border-gray-700 rounded text-white text-sm"
+                      />
+                      <button
+                        onClick={() => removeParam(index)}
+                        className="text-red-500 hover:text-red-400 p-1"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  ))}
                 </div>
               </div>
-            <div className="space-y-2">
-              {request.params.map((param: any, index: number) => (
-                <div key={index} className="flex gap-2 items-center">
-                  <input
-                    type="checkbox"
-                    checked={param.enabled}
-                    onChange={(e) => {
-                      const newParams = [...request.params];
-                      newParams[index].enabled = e.target.checked;
-                      updateParams(newParams);
-                    }}
-                    className="w-4 h-4"
-                  />
-                  <input
-                    type="text"
-                    value={param.key}
-                    onChange={(e) => {
-                      const newParams = [...request.params];
-                      newParams[index].key = e.target.value;
-                      updateParams(newParams);
-                    }}
-                    placeholder="Key"
-                    className="flex-1 px-2 py-1 bg-gray-800 border border-gray-700 rounded text-white text-sm"
-                  />
-                  <input
-                    type="text"
-                    value={param.value}
-                    onChange={(e) => {
-                      const newParams = [...request.params];
-                      newParams[index].value = e.target.value;
-                      updateParams(newParams);
-                    }}
-                    placeholder="Value"
-                    className="flex-1 px-2 py-1 bg-gray-800 border border-gray-700 rounded text-white text-sm"
-                  />
-                  <button
-                    onClick={() => removeParam(index)}
-                    className="text-red-500 hover:text-red-400 p-1"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </div>
-              ))}
-            </div>
             </div>
           )}
 
@@ -379,6 +493,24 @@ export default function RequestEditor({ request, onRequestChange, onSend, onSave
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-sm font-medium text-gray-300">Request Headers</h3>
                 <div className="flex gap-2">
+                  <div className="relative">
+                    <select
+                      onChange={(e) => {
+                        if (e.target.value) {
+                          insertUserAgent(e.target.value);
+                          e.target.value = '';
+                        }
+                      }}
+                      className="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded cursor-pointer"
+                    >
+                      <option value="">User-Agent</option>
+                      {USER_AGENTS.map((ua) => (
+                        <option key={ua.name} value={ua.value}>
+                          {ua.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                   {tokens.length > 0 && (
                     <div className="relative">
                       <select
@@ -409,7 +541,7 @@ export default function RequestEditor({ request, onRequestChange, onSend, onSave
                     <Plus size={16} />
                     Add
                   </button>
-                  {request.headers.length > 0 && (
+                  {displayHeaders.length > 0 && (
                     <button
                       onClick={deleteAllHeaders}
                       className="text-red-500 hover:text-red-400 text-sm flex items-center gap-1"
@@ -421,13 +553,13 @@ export default function RequestEditor({ request, onRequestChange, onSend, onSave
                 </div>
               </div>
             <div className="space-y-2">
-              {request.headers.map((header: any, index: number) => (
+              {displayHeaders.map((header: any, index: number) => (
                 <div key={index} className="flex gap-2 items-center relative">
                   <input
                     type="checkbox"
                     checked={header.enabled}
                     onChange={(e) => {
-                      const newHeaders = [...request.headers];
+                      const newHeaders = [...displayHeaders];
                       newHeaders[index].enabled = e.target.checked;
                       updateHeaders(newHeaders);
                     }}
@@ -437,7 +569,22 @@ export default function RequestEditor({ request, onRequestChange, onSend, onSave
                     <input
                       type="text"
                       value={header.key}
-                      onChange={(e) => handleHeaderKeyChange(index, e.target.value)}
+                      onChange={(e) => {
+                        const newHeaders = [...displayHeaders];
+                        newHeaders[index].key = e.target.value;
+                        updateHeaders(newHeaders);
+                        if (e.target.value.trim()) {
+                          const filtered = COMMON_HEADERS.filter(h => 
+                            h.toLowerCase().startsWith(e.target.value.toLowerCase())
+                          );
+                          setHeaderSuggestions(filtered);
+                          setActiveHeaderIndex(index);
+                          setSelectedSuggestionIndex(0);
+                        } else {
+                          setHeaderSuggestions([]);
+                          setActiveHeaderIndex(-1);
+                        }
+                      }}
                       onKeyDown={(e) => handleHeaderKeyDown(e, index)}
                       placeholder="Key"
                       className="w-full px-2 py-1 bg-gray-800 border border-gray-700 rounded text-white text-sm"
@@ -467,7 +614,7 @@ export default function RequestEditor({ request, onRequestChange, onSend, onSave
                     type="text"
                     value={header.value}
                     onChange={(e) => {
-                      const newHeaders = [...request.headers];
+                      const newHeaders = [...displayHeaders];
                       newHeaders[index].value = e.target.value;
                       updateHeaders(newHeaders);
                     }}
@@ -475,7 +622,10 @@ export default function RequestEditor({ request, onRequestChange, onSend, onSave
                     className="flex-1 px-2 py-1 bg-gray-800 border border-gray-700 rounded text-white text-sm"
                   />
                   <button
-                    onClick={() => removeHeader(index)}
+                    onClick={() => {
+                      const newHeaders = displayHeaders.filter((_: any, i: number) => i !== index);
+                      updateHeaders(newHeaders);
+                    }}
                     className="text-red-500 hover:text-red-400 p-1"
                   >
                     <Trash2 size={16} />
@@ -534,7 +684,7 @@ export default function RequestEditor({ request, onRequestChange, onSend, onSave
                         const currentFormData = updated.body?.formData || [];
                         updated.body = new main.RequestBody({
                           type: updated.body?.type || 'form-data',
-                          formData: [...currentFormData, new main.KeyValue({ key: '', value: '', enabled: true })]
+                          formData: [...currentFormData, new main.KeyValue({ key: '', value: '', enabled: true, type: 'text' })]
                         });
                         onRequestChange(updated);
                       }}
@@ -578,6 +728,30 @@ export default function RequestEditor({ request, onRequestChange, onSend, onSave
                           }}
                           className="w-4 h-4"
                         />
+                        {request.body?.type === 'form-data' && (
+                          <select
+                            value={field.type || 'text'}
+                            onChange={(e) => {
+                              const updated = new main.HttpRequest(request);
+                              const formData = [...(updated.body?.formData || [])];
+                              formData[index].type = e.target.value;
+                              if (e.target.value === 'file') {
+                                formData[index].value = '';
+                              } else {
+                                formData[index].filePath = '';
+                              }
+                              updated.body = new main.RequestBody({
+                                type: updated.body?.type || 'form-data',
+                                formData
+                              });
+                              onRequestChange(updated);
+                            }}
+                            className="px-2 py-1 bg-gray-800 border border-gray-700 rounded text-white text-sm"
+                          >
+                            <option value="text">Text</option>
+                            <option value="file">File</option>
+                          </select>
+                        )}
                         <input
                           type="text"
                           value={field.key}
@@ -594,22 +768,57 @@ export default function RequestEditor({ request, onRequestChange, onSend, onSave
                           placeholder="Key"
                           className="flex-1 px-2 py-1 bg-gray-800 border border-gray-700 rounded text-white text-sm"
                         />
-                        <input
-                          type="text"
-                          value={field.value}
-                          onChange={(e) => {
-                            const updated = new main.HttpRequest(request);
-                            const formData = [...(updated.body?.formData || [])];
-                            formData[index].value = e.target.value;
-                            updated.body = new main.RequestBody({
-                              type: updated.body?.type || 'form-data',
-                              formData
-                            });
-                            onRequestChange(updated);
-                          }}
-                          placeholder="Value"
-                          className="flex-1 px-2 py-1 bg-gray-800 border border-gray-700 rounded text-white text-sm"
-                        />
+                        {field.type === 'file' ? (
+                          <div className="flex-1 flex gap-2">
+                            <input
+                              type="text"
+                              value={field.filePath || ''}
+                              readOnly
+                              placeholder="No file selected"
+                              className="flex-1 px-2 py-1 bg-gray-800 border border-gray-700 rounded text-white text-sm"
+                            />
+                            <button
+                              onClick={async () => {
+                                try {
+                                  const path = await SelectFile();
+                                  if (path) {
+                                    const updated = new main.HttpRequest(request);
+                                    const formData = [...(updated.body?.formData || [])];
+                                    formData[index].filePath = path;
+                                    updated.body = new main.RequestBody({
+                                      type: updated.body?.type || 'form-data',
+                                      formData
+                                    });
+                                    onRequestChange(updated);
+                                  }
+                                } catch (err) {
+                                  console.error('Failed to select file:', err);
+                                }
+                              }}
+                              className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm flex items-center gap-1"
+                            >
+                              <Upload size={14} />
+                              Browse
+                            </button>
+                          </div>
+                        ) : (
+                          <input
+                            type="text"
+                            value={field.value}
+                            onChange={(e) => {
+                              const updated = new main.HttpRequest(request);
+                              const formData = [...(updated.body?.formData || [])];
+                              formData[index].value = e.target.value;
+                              updated.body = new main.RequestBody({
+                                type: updated.body?.type || 'form-data',
+                                formData
+                              });
+                              onRequestChange(updated);
+                            }}
+                            placeholder="Value"
+                            className="flex-1 px-2 py-1 bg-gray-800 border border-gray-700 rounded text-white text-sm"
+                          />
+                        )}
                         <button
                           onClick={() => {
                             const updated = new main.HttpRequest(request);

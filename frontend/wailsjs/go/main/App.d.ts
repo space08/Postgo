@@ -46,7 +46,7 @@ export function GetSavedTabs():Promise<Array<main.TabState>>;
 
 export function GetToken(arg1:string):Promise<main.Token>;
 
-export function ImportAllData():Promise<void>;
+export function ImportAllData():Promise<string>;
 
 export function ImportOpenAPI(arg1:string,arg2:string,arg3:string,arg4:string):Promise<Array<main.HttpRequest>>;
 
@@ -69,6 +69,8 @@ export function SaveTabsState(arg1:Array<main.TabState>):Promise<void>;
 export function SaveToken(arg1:main.Token):Promise<void>;
 
 export function SearchHistory(arg1:string):Promise<Array<main.HistoryRecord>>;
+
+export function SelectFile():Promise<string>;
 
 export function SendRequest(arg1:main.HttpRequest):Promise<main.HttpResponse>;
 
