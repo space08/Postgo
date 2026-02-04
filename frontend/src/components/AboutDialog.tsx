@@ -36,7 +36,7 @@ export default function AboutDialog({ onClose }: AboutDialogProps) {
           <div className="bg-gray-700 rounded-lg p-4 space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-gray-400">版本号：</span>
-              <span className="text-white font-mono">v1.0.4</span>
+              <span className="text-white font-mono">v1.0.5</span>
             </div>
             <div className="border-t border-gray-600"></div>
             <div className="flex justify-between items-center">

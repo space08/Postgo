@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AlertCircle, CheckCircle, XCircle } from 'lucide-react';
+import { AlertCircle, CheckCircle, XCircle, Copy, Check } from 'lucide-react';
 import { HttpResponse } from '../types';
 
 interface ResponseViewerProps {
@@ -14,6 +14,7 @@ type ViewMode = 'formatted' | 'raw' | 'preview';
 export default function ResponseViewer({ response, loading, error }: ResponseViewerProps) {
   const [activeTab, setActiveTab] = useState<TabType>('body');
   const [viewMode, setViewMode] = useState<ViewMode>('formatted');
+  const [copied, setCopied] = useState(false);
   
   if (loading) {
     return (
@@ -77,11 +78,37 @@ export default function ResponseViewer({ response, loading, error }: ResponseVie
 
   const formatBody = (body: string) => {
     if (viewMode === 'raw') return body;
+    
+    // Try JSON formatting first
     try {
       const parsed = JSON.parse(body);
       return JSON.stringify(parsed, null, 2);
     } catch {
+      // If not JSON, try HTML formatting
+      if (body.trim().startsWith('<')) {
+        return body
+          .replace(/></g, '>\n<')
+          .replace(/(<[^>]+>)([^<]+)/g, '$1\n  $2')
+          .replace(/\n\s*\n/g, '\n')
+          .trim();
+      }
       return body;
+    }
+  };
+
+  const handleCopy = async () => {
+    if (!response) return;
+    
+    const contentToCopy = viewMode === 'preview' 
+      ? response.body 
+      : formatBody(response.body);
+    
+    try {
+      await navigator.clipboard.writeText(contentToCopy);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
     }
   };
 
@@ -218,6 +245,14 @@ export default function ResponseViewer({ response, loading, error }: ResponseVie
                 }`}
               >
                 Preview
+              </button>
+              <button
+                onClick={handleCopy}
+                className="px-3 py-1 text-xs rounded bg-gray-700 text-gray-400 hover:bg-gray-600 flex items-center gap-1.5 transition-colors"
+                title="Copy to clipboard"
+              >
+                {copied ? <Check size={14} /> : <Copy size={14} />}
+                <span>{copied ? 'Copied!' : 'Copy'}</span>
               </button>
             </div>
           )}
