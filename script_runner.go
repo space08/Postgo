@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/dop251/goja"
 )
@@ -303,4 +304,54 @@ func (sr *ScriptRunner) setupPMObject(vm *goja.Runtime, ctx *PMContext, isPreReq
 		}
 		return goja.Null()
 	})
+
+	headers := vm.NewObject()
+	headers.Set("save", func(call goja.FunctionCall) goja.Value {
+		if len(call.Arguments) < 3 {
+			ctx.console = append(ctx.console, "pm.headers.save requires 3 arguments: (name, headerKey, value)")
+			return goja.Undefined()
+		}
+		
+		// Check if any argument is undefined or null
+		for i, arg := range call.Arguments {
+			if goja.IsUndefined(arg) || goja.IsNull(arg) {
+				ctx.console = append(ctx.console, fmt.Sprintf("pm.headers.save: argument %d is undefined or null, skipping save", i+1))
+				return goja.Undefined()
+			}
+		}
+		
+		name := call.Arguments[0].String()
+		headerKey := call.Arguments[1].String()
+		value := call.Arguments[2].String()
+		
+		// Additional validation
+		if value == "" || value == "undefined" || value == "null" {
+			ctx.console = append(ctx.console, fmt.Sprintf("pm.headers.save: invalid value '%s', skipping save", value))
+			return goja.Undefined()
+		}
+
+		header := Header{
+			ID:        fmt.Sprintf("header-%d", time.Now().UnixNano()),
+			Name:      name,
+			HeaderKey: headerKey,
+			Value:     value,
+		}
+
+		err := sr.app.headerStorage.SaveHeader(header)
+		if err != nil {
+			ctx.console = append(ctx.console, fmt.Sprintf("Failed to save header: %v", err))
+		} else {
+			ctx.console = append(ctx.console, fmt.Sprintf("Saved header '%s' (%s: %s...)", name, headerKey, value[:min(20, len(value))]))
+		}
+
+		return goja.Undefined()
+	})
+	pm.Set("headers", headers)
+}
+
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
 }

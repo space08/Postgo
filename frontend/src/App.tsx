@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { History, Key, Info, Globe, Download, Upload } from 'lucide-react';
+import { History, List, Info, Globe, Download, Upload, Minus, Square, X } from 'lucide-react';
 import './App.css';
+import { WindowMinimise, WindowToggleMaximise, Quit } from '../wailsjs/runtime/runtime';
 import { 
   SendRequest, 
   GetHistory, 
@@ -10,12 +11,11 @@ import {
   CreateProject,
   UpdateProject,
   DeleteProject,
-  GetAllTokens,
-  SaveToken,
-  DeleteToken,
+  GetAllHeaders,
+  SaveHeader,
+  DeleteHeader,
   GetProjectRequests,
   ImportOpenAPI,
-  SaveRequest,
   GetAllEnvironments,
   SaveEnvironment,
   DeleteEnvironment,
@@ -31,9 +31,9 @@ import RequestEditor from './components/RequestEditor';
 import ResponseViewer from './components/ResponseViewer';
 import HistoryPanel from './components/HistoryPanel';
 import ProjectSidebar from './components/ProjectSidebar';
-import { Tab, HttpRequest, HttpResponse, HistoryRecord, Project, Token, Environment } from './types';
+import { Tab, HttpRequest, HttpResponse, HistoryRecord, Project, Header, Environment } from './types';
 import { main } from '../wailsjs/go/models';
-import TokenManager from './components/TokenManager';
+import HeaderManager from './components/HeaderManager';
 import AboutDialog from './components/AboutDialog';
 import EnvironmentManager from './components/EnvironmentManager';
 
@@ -47,8 +47,8 @@ function App() {
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [requestHeight, setRequestHeight] = useState<number>(50);
   const [isDragging, setIsDragging] = useState(false);
-  const [tokens, setTokens] = useState<Token[]>([]);
-  const [showTokenManager, setShowTokenManager] = useState(false);
+  const [headers, setHeaders] = useState<Header[]>([]);
+  const [showHeaderManager, setShowHeaderManager] = useState(false);
   const [showAboutDialog, setShowAboutDialog] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [environments, setEnvironments] = useState<Environment[]>([]);
@@ -83,7 +83,7 @@ function App() {
       
       loadHistory();
       loadProjects();
-      loadTokens();
+      loadHeaders();
       loadEnvironments();
     };
     
@@ -176,12 +176,12 @@ function App() {
     }
   };
 
-  const loadTokens = async () => {
+  const loadHeaders = async () => {
     try {
-      const tokensData = await GetAllTokens();
-      setTokens(tokensData || []);
+      const headersData = await GetAllHeaders();
+      setHeaders(headersData || []);
     } catch (err) {
-      console.error('Failed to load tokens:', err);
+      console.error('Failed to load headers:', err);
     }
   };
 
@@ -226,21 +226,21 @@ function App() {
     }
   };
 
-  const handleSaveToken = async (token: Token) => {
+  const handleSaveHeader = async (header: Header) => {
     try {
-      await SaveToken(token);
-      await loadTokens();
+      await SaveHeader(header);
+      await loadHeaders();
     } catch (err) {
-      console.error('Failed to save token:', err);
+      console.error('Failed to save header:', err);
     }
   };
 
-  const handleDeleteToken = async (tokenId: string) => {
+  const handleDeleteHeader = async (headerId: string) => {
     try {
-      await DeleteToken(tokenId);
-      await loadTokens();
+      await DeleteHeader(headerId);
+      await loadHeaders();
     } catch (err) {
-      console.error('Failed to delete token:', err);
+      console.error('Failed to delete header:', err);
     }
   };
 
@@ -451,6 +451,7 @@ function App() {
       ));
       
       await loadHistory();
+      await loadHeaders();
     } catch (err: any) {
       console.error('Request failed:', err);
       
@@ -471,18 +472,7 @@ function App() {
     }
   };
 
-  const handleSaveRequest = async () => {
-    const activeTab = tabs.find(tab => tab.id === activeTabId);
-    if (!activeTab || !activeTab.request.projectId) return;
 
-    try {
-      await SaveRequest(activeTab.request);
-      alert('请求已保存');
-    } catch (err) {
-      console.error('Failed to save request:', err);
-      alert('保存失败: ' + err);
-    }
-  };
 
   const handleSelectHistory = (request: HttpRequest) => {
     const newRequest = new main.HttpRequest(request);
@@ -567,8 +557,42 @@ function App() {
 
   return (
     <div className="h-screen flex flex-col bg-gray-900 text-white" style={{ userSelect: isDragging ? 'none' : 'auto' }}>
+      {/* Custom Title Bar */}
+      <div className="flex items-center justify-between bg-gray-800 border-b border-gray-700" style={{ height: '32px' }} data-wails-drag>
+        <div className="flex items-center h-full flex-1">
+          <h1 className="ml-2 text-sm font-semibold text-gray-300">PostGo</h1>
+        </div>
+        <div className="flex items-center h-full gap-2 mr-3" data-wails-no-drag>
+          <button
+            onClick={() => setShowAboutDialog(true)}
+            className="w-5 h-5 rounded-full bg-gray-500 hover:bg-gray-400 flex items-center justify-center group"
+          >
+            <Info size={12} className="text-gray-900 group-hover:text-gray-800" />
+          </button>
+          <button
+            onClick={() => WindowMinimise()}
+            className="w-5 h-5 rounded-full bg-yellow-500 hover:bg-yellow-400 flex items-center justify-center group"
+          >
+            <Minus size={12} className="text-yellow-900 group-hover:text-yellow-800" />
+          </button>
+          <button
+            onClick={() => WindowToggleMaximise()}
+            className="w-5 h-5 rounded-full bg-green-500 hover:bg-green-400 flex items-center justify-center group"
+          >
+            <Square size={10} className="text-green-900 group-hover:text-green-800" />
+          </button>
+          <button
+            onClick={() => Quit()}
+            className="w-5 h-5 rounded-full bg-red-500 hover:bg-red-400 flex items-center justify-center group"
+          >
+            <X size={12} className="text-red-900 group-hover:text-red-800" />
+          </button>
+        </div>
+      </div>
+
+      {/* Toolbar */}
       <div className="flex items-center justify-between bg-gray-800 px-4 py-2 border-b border-gray-700">
-        <h1 className="text-xl font-bold">PostGo</h1>
+        <div className="text-sm font-medium text-gray-400">API Client</div>
         <div className="flex gap-2">
           <button
             onClick={() => setShowEnvironmentManager(true)}
@@ -584,11 +608,11 @@ function App() {
               : 'Environment'}
           </button>
           <button
-            onClick={() => setShowTokenManager(true)}
+            onClick={() => setShowHeaderManager(true)}
             className="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded flex items-center gap-2"
           >
-            <Key size={16} />
-            Tokens
+            <List size={16} />
+            Headers
           </button>
           <button
             onClick={() => setShowHistory(!showHistory)}
@@ -611,13 +635,6 @@ function App() {
           >
             <Upload size={16} />
             Import
-          </button>
-          <button
-            onClick={() => setShowAboutDialog(true)}
-            className="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded flex items-center gap-2"
-          >
-            <Info size={16} />
-            About
           </button>
         </div>
       </div>
@@ -658,8 +675,7 @@ function App() {
                 request={activeTab.request}
                 onRequestChange={handleRequestChange}
                 onSend={handleSend}
-                onSave={handleSaveRequest}
-                tokens={tokens}
+                headers={headers}
                 pathParams={activeTab.pathParams || {}}
                 pathParamOrder={activeTab.pathParamOrder || []}
                 onPathParamsChange={(params, order) => {
@@ -688,6 +704,7 @@ function App() {
                 response={activeTab.response}
                 loading={loading}
                 error={activeTab.error}
+                onSaveHeader={handleSaveHeader}
               />
             )}
           </div>
@@ -706,12 +723,12 @@ function App() {
         )}
       </div>
 
-      {showTokenManager && (
-        <TokenManager
-          tokens={tokens}
-          onSaveToken={handleSaveToken}
-          onDeleteToken={handleDeleteToken}
-          onClose={() => setShowTokenManager(false)}
+      {showHeaderManager && (
+        <HeaderManager
+          headers={headers}
+          onSaveHeader={handleSaveHeader}
+          onDeleteHeader={handleDeleteHeader}
+          onClose={() => setShowHeaderManager(false)}
         />
       )}
 

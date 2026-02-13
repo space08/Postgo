@@ -8,13 +8,11 @@ export function CreateProject(arg1:main.Project):Promise<void>;
 
 export function DeleteEnvironment(arg1:string):Promise<void>;
 
+export function DeleteHeader(arg1:string):Promise<void>;
+
 export function DeleteHistoryRecord(arg1:string):Promise<void>;
 
 export function DeleteProject(arg1:string):Promise<void>;
-
-export function DeleteRequest(arg1:string):Promise<void>;
-
-export function DeleteToken(arg1:string):Promise<void>;
 
 export function ExchangeOAuth2Code(arg1:main.Auth,arg2:string):Promise<main.Auth>;
 
@@ -26,11 +24,13 @@ export function GetActiveEnvironment():Promise<string>;
 
 export function GetAllEnvironments():Promise<Array<main.Environment>>;
 
+export function GetAllHeaders():Promise<Array<main.Header>>;
+
 export function GetAllProjects():Promise<Array<main.Project>>;
 
-export function GetAllTokens():Promise<Array<main.Token>>;
-
 export function GetEnvironment(arg1:string):Promise<main.Environment>;
+
+export function GetHeader(arg1:string):Promise<main.Header>;
 
 export function GetHistory(arg1:number):Promise<Array<main.HistoryRecord>>;
 
@@ -43,8 +43,6 @@ export function GetProject(arg1:string):Promise<main.Project>;
 export function GetProjectRequests(arg1:string):Promise<Array<main.HistoryRecord>>;
 
 export function GetSavedTabs():Promise<Array<main.TabState>>;
-
-export function GetToken(arg1:string):Promise<main.Token>;
 
 export function ImportAllData():Promise<string>;
 
@@ -62,11 +60,9 @@ export function RunCollection(arg1:string):Promise<main.CollectionRunResult>;
 
 export function SaveEnvironment(arg1:main.Environment):Promise<void>;
 
-export function SaveRequest(arg1:main.HttpRequest):Promise<void>;
+export function SaveHeader(arg1:main.Header):Promise<void>;
 
 export function SaveTabsState(arg1:Array<main.TabState>):Promise<void>;
-
-export function SaveToken(arg1:main.Token):Promise<void>;
 
 export function SearchHistory(arg1:string):Promise<Array<main.HistoryRecord>>;
 
@@ -79,5 +75,3 @@ export function SetActiveEnvironment(arg1:string):Promise<void>;
 export function StartOAuth2Flow(arg1:main.Auth):Promise<void>;
 
 export function UpdateProject(arg1:main.Project):Promise<void>;
-
-export function UpdateRequest(arg1:main.HttpRequest):Promise<void>;

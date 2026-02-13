@@ -14,20 +14,16 @@ export function DeleteEnvironment(arg1) {
   return window['go']['main']['App']['DeleteEnvironment'](arg1);
 }
 
+export function DeleteHeader(arg1) {
+  return window['go']['main']['App']['DeleteHeader'](arg1);
+}
+
 export function DeleteHistoryRecord(arg1) {
   return window['go']['main']['App']['DeleteHistoryRecord'](arg1);
 }
 
 export function DeleteProject(arg1) {
   return window['go']['main']['App']['DeleteProject'](arg1);
-}
-
-export function DeleteRequest(arg1) {
-  return window['go']['main']['App']['DeleteRequest'](arg1);
-}
-
-export function DeleteToken(arg1) {
-  return window['go']['main']['App']['DeleteToken'](arg1);
 }
 
 export function ExchangeOAuth2Code(arg1, arg2) {
@@ -50,16 +46,20 @@ export function GetAllEnvironments() {
   return window['go']['main']['App']['GetAllEnvironments']();
 }
 
+export function GetAllHeaders() {
+  return window['go']['main']['App']['GetAllHeaders']();
+}
+
 export function GetAllProjects() {
   return window['go']['main']['App']['GetAllProjects']();
 }
 
-export function GetAllTokens() {
-  return window['go']['main']['App']['GetAllTokens']();
-}
-
 export function GetEnvironment(arg1) {
   return window['go']['main']['App']['GetEnvironment'](arg1);
+}
+
+export function GetHeader(arg1) {
+  return window['go']['main']['App']['GetHeader'](arg1);
 }
 
 export function GetHistory(arg1) {
@@ -84,10 +84,6 @@ export function GetProjectRequests(arg1) {
 
 export function GetSavedTabs() {
   return window['go']['main']['App']['GetSavedTabs']();
-}
-
-export function GetToken(arg1) {
-  return window['go']['main']['App']['GetToken'](arg1);
 }
 
 export function ImportAllData() {
@@ -122,16 +118,12 @@ export function SaveEnvironment(arg1) {
   return window['go']['main']['App']['SaveEnvironment'](arg1);
 }
 
-export function SaveRequest(arg1) {
-  return window['go']['main']['App']['SaveRequest'](arg1);
+export function SaveHeader(arg1) {
+  return window['go']['main']['App']['SaveHeader'](arg1);
 }
 
 export function SaveTabsState(arg1) {
   return window['go']['main']['App']['SaveTabsState'](arg1);
-}
-
-export function SaveToken(arg1) {
-  return window['go']['main']['App']['SaveToken'](arg1);
 }
 
 export function SearchHistory(arg1) {
@@ -156,8 +148,4 @@ export function StartOAuth2Flow(arg1) {
 
 export function UpdateProject(arg1) {
   return window['go']['main']['App']['UpdateProject'](arg1);
-}
-
-export function UpdateRequest(arg1) {
-  return window['go']['main']['App']['UpdateRequest'](arg1);
 }

@@ -1,53 +1,53 @@
 import { useState } from 'react';
-import { Key, Plus, Edit2, Trash2, X } from 'lucide-react';
-import { Token } from '../types';
+import { List, Plus, Edit2, Trash2, X } from 'lucide-react';
+import { Header } from '../types';
 import { main } from '../../wailsjs/go/models';
 
-interface TokenManagerProps {
-  tokens: Token[];
-  onSaveToken: (token: Token) => void;
-  onDeleteToken: (tokenId: string) => void;
+interface HeaderManagerProps {
+  headers: Header[];
+  onSaveHeader: (header: Header) => void;
+  onDeleteHeader: (headerId: string) => void;
   onClose: () => void;
 }
 
-export default function TokenManager({
-  tokens,
-  onSaveToken,
-  onDeleteToken,
+export default function HeaderManager({
+  headers,
+  onSaveHeader,
+  onDeleteHeader,
   onClose,
-}: TokenManagerProps) {
+}: HeaderManagerProps) {
   const [showDialog, setShowDialog] = useState(false);
-  const [editingToken, setEditingToken] = useState<Token | null>(null);
-  const [tokenName, setTokenName] = useState('');
-  const [tokenValue, setTokenValue] = useState('');
-  const [tokenHeaderKey, setTokenHeaderKey] = useState('Authorization');
+  const [editingHeader, setEditingHeader] = useState<Header | null>(null);
+  const [headerName, setHeaderName] = useState('');
+  const [headerValue, setHeaderValue] = useState('');
+  const [headerKey, setHeaderKey] = useState('Authorization');
 
   const handleSave = () => {
-    if (tokenName.trim() && tokenValue.trim()) {
-      const token = new main.Token({
-        id: editingToken?.id || `token-${Date.now()}`,
-        name: tokenName.trim(),
-        value: tokenValue.trim(),
-        headerKey: tokenHeaderKey.trim(),
+    if (headerName.trim() && headerValue.trim()) {
+      const header = new main.Header({
+        id: editingHeader?.id || `header-${Date.now()}`,
+        name: headerName.trim(),
+        value: headerValue.trim(),
+        headerKey: headerKey.trim(),
       });
-      onSaveToken(token);
+      onSaveHeader(header);
       resetForm();
     }
   };
 
   const resetForm = () => {
-    setTokenName('');
-    setTokenValue('');
-    setTokenHeaderKey('Authorization');
-    setEditingToken(null);
+    setHeaderName('');
+    setHeaderValue('');
+    setHeaderKey('Authorization');
+    setEditingHeader(null);
     setShowDialog(false);
   };
 
-  const startEdit = (token: Token) => {
-    setEditingToken(token);
-    setTokenName(token.name);
-    setTokenValue(token.value);
-    setTokenHeaderKey(token.headerKey);
+  const startEdit = (header: Header) => {
+    setEditingHeader(header);
+    setHeaderName(header.name);
+    setHeaderValue(header.value);
+    setHeaderKey(header.headerKey);
     setShowDialog(true);
   };
 
@@ -56,8 +56,8 @@ export default function TokenManager({
       <div className="bg-gray-800 rounded-lg p-6 w-[600px] max-h-[80vh] flex flex-col">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold text-white flex items-center gap-2">
-            <Key size={24} />
-            Token Manager
+            <List size={24} />
+            Header Manager
           </h2>
           <button
             onClick={onClose}
@@ -69,36 +69,36 @@ export default function TokenManager({
 
         <div className="flex-1 overflow-y-auto mb-4">
           <div className="space-y-2">
-            {tokens.length === 0 ? (
+            {headers.length === 0 ? (
               <div className="text-gray-500 text-center py-8">
-                No tokens saved yet
+                No headers saved yet
               </div>
             ) : (
-              tokens.map((token) => (
+              headers.map((header) => (
                 <div
-                  key={token.id}
+                  key={header.id}
                   className="bg-gray-700 rounded p-3 flex items-start justify-between"
                 >
                   <div className="flex-1">
-                    <div className="text-white font-medium">{token.name}</div>
+                    <div className="text-white font-medium">{header.name}</div>
                     <div className="text-gray-400 text-sm mt-1">
-                      Header: <span className="text-blue-400">{token.headerKey}</span>
+                      Header: <span className="text-blue-400">{header.headerKey}</span>
                     </div>
                     <div className="text-gray-400 text-sm mt-1 font-mono break-all">
-                      {token.value.length > 50
-                        ? token.value.substring(0, 50) + '...'
-                        : token.value}
+                      {header.value.length > 50
+                        ? header.value.substring(0, 50) + '...'
+                        : header.value}
                     </div>
                   </div>
                   <div className="flex gap-2 ml-4">
                     <button
-                      onClick={() => startEdit(token)}
+                      onClick={() => startEdit(header)}
                       className="text-blue-500 hover:text-blue-400 p-1"
                     >
                       <Edit2 size={16} />
                     </button>
                     <button
-                      onClick={() => onDeleteToken(token.id)}
+                      onClick={() => onDeleteHeader(header.id)}
                       className="text-red-500 hover:text-red-400 p-1"
                     >
                       <Trash2 size={16} />
@@ -115,25 +115,25 @@ export default function TokenManager({
           className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded flex items-center justify-center gap-2"
         >
           <Plus size={18} />
-          Add New Token
+          Add New Header
         </button>
 
         {showDialog && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-gray-800 rounded-lg p-6 w-[500px]">
               <h3 className="text-lg font-semibold text-white mb-4">
-                {editingToken ? 'Edit Token' : 'Add New Token'}
+                {editingHeader ? 'Edit Header' : 'Add New Header'}
               </h3>
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm text-gray-300 mb-1">
-                    Token Name
+                    Header Name
                   </label>
                   <input
                     type="text"
-                    value={tokenName}
-                    onChange={(e) => setTokenName(e.target.value)}
-                    placeholder="e.g., Production API Token"
+                    value={headerName}
+                    onChange={(e) => setHeaderName(e.target.value)}
+                    placeholder="e.g., Production Auth Token"
                     className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white"
                   />
                 </div>
@@ -143,20 +143,20 @@ export default function TokenManager({
                   </label>
                   <input
                     type="text"
-                    value={tokenHeaderKey}
-                    onChange={(e) => setTokenHeaderKey(e.target.value)}
-                    placeholder="Authorization"
+                    value={headerKey}
+                    onChange={(e) => setHeaderKey(e.target.value)}
+                    placeholder="Authorization, Cookie, X-API-Key, etc."
                     className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white"
                   />
                 </div>
                 <div>
                   <label className="block text-sm text-gray-300 mb-1">
-                    Token Value
+                    Header Value
                   </label>
                   <textarea
-                    value={tokenValue}
-                    onChange={(e) => setTokenValue(e.target.value)}
-                    placeholder="Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    value={headerValue}
+                    onChange={(e) => setHeaderValue(e.target.value)}
+                    placeholder="Bearer token, session=abc; user=xyz, or any header value"
                     className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white font-mono text-sm resize-none"
                     rows={4}
                   />
@@ -167,7 +167,7 @@ export default function TokenManager({
                   onClick={handleSave}
                   className="flex-1 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
                 >
-                  {editingToken ? 'Update' : 'Save'}
+                  {editingHeader ? 'Update' : 'Save'}
                 </button>
                 <button
                   onClick={resetForm}

@@ -1,0 +1,7 @@
+[data-wails-drag] {
+  --wails-draggable: drag;
+}
+
+[data-wails-no-drag] {
+  --wails-draggable: no-drag;
+}

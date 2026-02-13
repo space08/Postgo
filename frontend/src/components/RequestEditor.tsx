@@ -1,6 +1,6 @@
-import { Send, Plus, Trash2, Key, Save, Upload } from 'lucide-react';
+import { Send, Plus, Trash2, List, Upload } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
-import { HttpRequest, HttpMethod, KeyValue, Token } from '../types';
+import { HttpRequest, HttpMethod, KeyValue, Header } from '../types';
 import { main } from '../../wailsjs/go/models';
 import { StartOAuth2Flow, ExchangeOAuth2Code, GetOAuth2ClientCredentialsToken, GetOAuth2PasswordToken, RefreshOAuth2Token, SelectFile } from '../../wailsjs/go/main/App';
 
@@ -8,8 +8,7 @@ interface RequestEditorProps {
   request: HttpRequest;
   onRequestChange: (request: HttpRequest) => void;
   onSend: () => void;
-  onSave?: () => void;
-  tokens?: Token[];
+  headers?: Header[];
   pathParams?: { [key: string]: string };
   pathParamOrder?: string[];
   onPathParamsChange?: (params: { [key: string]: string }, order: string[]) => void;
@@ -65,7 +64,7 @@ const USER_AGENTS = [
 
 type RequestTabType = 'params' | 'headers' | 'body' | 'auth' | 'scripts';
 
-export default function RequestEditor({ request, onRequestChange, onSend, onSave, tokens = [], pathParams: externalPathParams = {}, pathParamOrder = [], onPathParamsChange }: RequestEditorProps) {
+export default function RequestEditor({ request, onRequestChange, onSend, headers = [], pathParams: externalPathParams = {}, pathParamOrder = [], onPathParamsChange }: RequestEditorProps) {
   const [activeTab, setActiveTab] = useState<RequestTabType>('params');
   const [headerSuggestions, setHeaderSuggestions] = useState<string[]>([]);
   const [activeHeaderIndex, setActiveHeaderIndex] = useState<number>(-1);
@@ -149,18 +148,18 @@ export default function RequestEditor({ request, onRequestChange, onSend, onSave
     updateHeaders([]);
   };
 
-  const insertToken = (token: Token) => {
-    const existingIndex = request.headers.findIndex(h => h.key === token.headerKey);
+  const insertHeader = (header: Header) => {
+    const existingIndex = request.headers.findIndex(h => h.key === header.headerKey);
     
     if (existingIndex >= 0) {
       const newHeaders = [...request.headers];
-      newHeaders[existingIndex].value = token.value;
+      newHeaders[existingIndex].value = header.value;
       newHeaders[existingIndex].enabled = true;
       updateHeaders(newHeaders);
     } else {
       updateHeaders([...request.headers, new main.KeyValue({ 
-        key: token.headerKey, 
-        value: token.value, 
+        key: header.headerKey, 
+        value: header.value, 
         enabled: true 
       })]);
     }
@@ -250,17 +249,11 @@ export default function RequestEditor({ request, onRequestChange, onSend, onSave
         e.preventDefault();
         handleSend();
       }
-      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-        e.preventDefault();
-        if (onSave && request.projectId) {
-          onSave();
-        }
-      }
     };
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [onSend, onSave, request.projectId]);
+  }, [onSend]);
 
   return (
     <div className="flex flex-col h-full bg-gray-900">
@@ -309,15 +302,6 @@ export default function RequestEditor({ request, onRequestChange, onSend, onSave
             <Send size={18} />
             Send
           </button>
-          {onSave && request.projectId && (
-            <button
-              onClick={onSave}
-              className="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded flex items-center gap-2"
-            >
-              <Save size={18} />
-              Save
-            </button>
-          )}
         </div>
       </div>
 
@@ -511,24 +495,24 @@ export default function RequestEditor({ request, onRequestChange, onSend, onSave
                       ))}
                     </select>
                   </div>
-                  {tokens.length > 0 && (
+                  {headers.length > 0 && (
                     <div className="relative">
                       <select
                         onChange={(e) => {
                           if (e.target.value) {
-                            const token = tokens.find(t => t.id === e.target.value);
-                            if (token) {
-                              insertToken(token);
+                            const header = headers.find(h => h.id === e.target.value);
+                            if (header) {
+                              insertHeader(header);
                               e.target.value = '';
                             }
                           }
                         }}
                         className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-sm rounded flex items-center gap-1 cursor-pointer"
                       >
-                        <option value="">Insert Token</option>
-                        {tokens.map((token) => (
-                          <option key={token.id} value={token.id}>
-                            {token.name}
+                        <option value="">Insert Header</option>
+                        {headers.map((header) => (
+                          <option key={header.id} value={header.id}>
+                            {header.name}
                           </option>
                         ))}
                       </select>
@@ -1307,7 +1291,7 @@ export default function RequestEditor({ request, onRequestChange, onSend, onSave
                     <span className="text-xs text-gray-500">Executed after receiving the response</span>
                   </div>
                   <textarea
-                    value={request.scripts?.postRequest || ''}
+                    value={request.scripts?.postRequest || `// 从 JSON 响应提取 token\n//const json = pm.response.json();\n//pm.headers.save("Auth Token", "Authorization", \`Bearer \${json.data.token}\`);\n\n// 从响应头提取 Cookie\n//const cookie = pm.response.headers["Set-Cookie"];\n//pm.headers.save("Session", "Cookie", cookie);`}
                     onChange={(e) => {
                       const updated = new main.HttpRequest(request);
                       if (!updated.scripts) {
@@ -1323,21 +1307,20 @@ export default function RequestEditor({ request, onRequestChange, onSend, onSave
                       }
                       onRequestChange(updated);
                     }}
-                    placeholder={`// Example: Test response status\npm.test("Status is 200", function() {\n  expect(pm.response).to.have.status(200);\n});\n\n// Extract and save token\nconst data = pm.response.json();\npm.environment.set("authToken", data.token);\n\n// Available APIs:\n// - pm.test\n// - pm.response\n// - pm.environment.get/set\n// - expect\n// - console.log`}
-                    className="w-full h-48 px-3 py-2 bg-gray-800 border border-gray-700 rounded text-white placeholder-gray-500 font-mono text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full h-48 px-3 py-2 bg-gray-800 border border-gray-700 rounded text-white font-mono text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
               </div>
 
               <div className="mt-4 p-3 bg-blue-900/20 border border-blue-700 rounded text-sm text-gray-300">
-                <p className="mb-2"><strong>Postman-like Script API:</strong></p>
+                <p className="mb-2"><strong>Available Script APIs:</strong></p>
                 <ul className="space-y-1 ml-4 list-disc text-xs text-gray-400">
-                  <li><code>pm.environment.get(key)</code> / <code>pm.environment.set(key, value)</code></li>
-                  <li><code>pm.request.url</code>, <code>pm.request.method</code>, <code>pm.request.headers</code></li>
-                  <li><code>pm.response.code</code>, <code>pm.response.status</code>, <code>pm.response.json()</code></li>
-                  <li><code>pm.test(name, function)</code> - Define a test</li>
-                  <li><code>expect(pm.response).to.have.status(200)</code> - Assert status code</li>
-                  <li><code>console.log(message)</code> - Output to console (shown in test results)</li>
+                  <li><code>pm.environment.get(key)</code> / <code>pm.environment.set(key, value)</code> - Manage environment variables</li>
+                  <li><code>pm.headers.save(name, headerKey, value)</code> - Save header/token/cookie for reuse</li>
+                  <li><code>pm.request.url</code>, <code>pm.request.method</code>, <code>pm.request.headers</code> - Access request data</li>
+                  <li><code>pm.response.code</code>, <code>pm.response.status</code>, <code>pm.response.json()</code>, <code>pm.response.text()</code></li>
+                  <li><code>pm.response.headers["Set-Cookie"]</code> - Access response headers</li>
+                  <li><code>console.log(message)</code> - Output to console</li>
                 </ul>
               </div>
             </div>

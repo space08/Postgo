@@ -91,7 +91,11 @@ func (h *HttpClient) SendRequest(req HttpRequest) (*HttpResponse, error) {
 
 	headers := make(map[string]string)
 	for key, values := range resp.Header {
-		headers[key] = strings.Join(values, ", ")
+		if strings.ToLower(key) == "set-cookie" {
+			headers[key] = strings.Join(values, "\n")
+		} else {
+			headers[key] = strings.Join(values, ", ")
+		}
 	}
 
 	return &HttpResponse{

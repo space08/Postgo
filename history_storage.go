@@ -189,6 +189,29 @@ func isRequestDuplicate(r1, r2 HttpRequest) bool {
 		return false
 	}
 
+	if !areAuthEqual(r1.Auth, r2.Auth) {
+		return false
+	}
+
+	return true
+}
+
+func areAuthEqual(a1, a2 *Auth) bool {
+	if a1 == nil && a2 == nil {
+		return true
+	}
+	if a1 == nil || a2 == nil {
+		return false
+	}
+
+	if a1.Type != a2.Type {
+		return false
+	}
+
+	if a1.Username != a2.Username || a1.Password != a2.Password || a1.Token != a2.Token {
+		return false
+	}
+
 	return true
 }
 

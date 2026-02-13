@@ -16,7 +16,7 @@ type App struct {
 	httpClient         *HttpClient
 	historyStorage     *HistoryStorage
 	projectStorage     *ProjectStorage
-	tokenStorage       *TokenStorage
+	headerStorage      *HeaderStorage
 	requestStorage     *RequestStorage
 	environmentStorage *EnvironmentStorage
 	tabStorage         *TabStorage
@@ -40,10 +40,10 @@ func NewApp() (*App, error) {
 		return nil, fmt.Errorf("failed to initialize project storage: %w", err)
 	}
 
-	tokenStorage, err := NewTokenStorage()
+	headerStorage, err := NewHeaderStorage()
 	if err != nil {
-		LogError("Failed to initialize token storage: %v", err)
-		return nil, fmt.Errorf("failed to initialize token storage: %w", err)
+		LogError("Failed to initialize header storage: %v", err)
+		return nil, fmt.Errorf("failed to initialize header storage: %w", err)
 	}
 
 	requestStorage, err := NewRequestStorage()
@@ -120,7 +120,7 @@ func NewApp() (*App, error) {
 		httpClient:         NewHttpClient(),
 		historyStorage:     historyStorage,
 		projectStorage:     projectStorage,
-		tokenStorage:       tokenStorage,
+		headerStorage:      headerStorage,
 		requestStorage:     requestStorage,
 		environmentStorage: environmentStorage,
 		tabStorage:         tabStorage,
@@ -244,20 +244,20 @@ func (a *App) GetProjectRequests(projectId string) []HistoryRecord {
 	return result
 }
 
-func (a *App) SaveToken(token Token) error {
-	return a.tokenStorage.SaveToken(token)
+func (a *App) SaveHeader(header Header) error {
+	return a.headerStorage.SaveHeader(header)
 }
 
-func (a *App) GetAllTokens() []Token {
-	return a.tokenStorage.GetAllTokens()
+func (a *App) GetAllHeaders() []Header {
+	return a.headerStorage.GetAllHeaders()
 }
 
-func (a *App) GetToken(id string) *Token {
-	return a.tokenStorage.GetToken(id)
+func (a *App) GetHeader(id string) *Header {
+	return a.headerStorage.GetHeader(id)
 }
 
-func (a *App) DeleteToken(id string) error {
-	return a.tokenStorage.DeleteToken(id)
+func (a *App) DeleteHeader(id string) error {
+	return a.headerStorage.DeleteHeader(id)
 }
 
 func (a *App) ImportOpenAPI(fileContent string, format string, projectId string, baseURL string) ([]HttpRequest, error) {
@@ -308,18 +308,6 @@ func (a *App) ImportProjectAPI(projectId string) error {
 
 func (a *App) ImportProjectJSON(projectId string, content string) error {
 	return a.requestStorage.ImportRequestsFromContent(projectId, []byte(content))
-}
-
-func (a *App) SaveRequest(req HttpRequest) error {
-	return a.requestStorage.AddRequest(req)
-}
-
-func (a *App) UpdateRequest(req HttpRequest) error {
-	return a.requestStorage.AddRequest(req)
-}
-
-func (a *App) DeleteRequest(id string) error {
-	return a.requestStorage.DeleteRequest(id)
 }
 
 func (a *App) GetAllEnvironments() []Environment {
@@ -380,7 +368,7 @@ type BackupData struct {
 	History      []HistoryRecord `json:"history"`
 	Projects     []Project       `json:"projects"`
 	Requests     []HttpRequest   `json:"requests"`
-	Tokens       []Token         `json:"tokens"`
+	Headers      []Header        `json:"headers"`
 	Environments []Environment   `json:"environments"`
 	Tabs         []TabState      `json:"tabs"`
 }
@@ -389,7 +377,7 @@ func (a *App) ExportAllData() (string, error) {
 	backup := BackupData{
 		History:      a.historyStorage.GetHistory(10000),
 		Projects:     a.projectStorage.GetAllProjects(),
-		Tokens:       a.tokenStorage.GetAllTokens(),
+		Headers:      a.headerStorage.GetAllHeaders(),
 		Environments: a.environmentStorage.GetAllEnvironments(),
 		Tabs:         a.tabStorage.GetAllTabs(),
 	}
@@ -466,9 +454,9 @@ func (a *App) ImportAllData() (string, error) {
 		}
 	}
 
-	for _, token := range backup.Tokens {
-		if err := a.tokenStorage.SaveToken(token); err != nil {
-			LogWarn("Failed to import token %s: %v", token.Name, err)
+	for _, header := range backup.Headers {
+		if err := a.headerStorage.SaveHeader(header); err != nil {
+			LogWarn("Failed to import header %s: %v", header.Name, err)
 		}
 	}
 

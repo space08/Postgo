@@ -1,20 +1,28 @@
 import { useState } from 'react';
-import { AlertCircle, CheckCircle, XCircle, Copy, Check } from 'lucide-react';
-import { HttpResponse } from '../types';
+import { AlertCircle, Copy, Check, Save, Download } from 'lucide-react';
+import { HttpResponse, Header } from '../types';
+import { main } from '../../wailsjs/go/models';
 
 interface ResponseViewerProps {
   response?: HttpResponse;
   loading: boolean;
   error?: string;
+  onSaveHeader?: (header: Header) => void;
 }
 
-type TabType = 'body' | 'headers' | 'cookies' | 'tests';
+type TabType = 'body' | 'headers' | 'cookies';
 type ViewMode = 'formatted' | 'raw' | 'preview';
 
-export default function ResponseViewer({ response, loading, error }: ResponseViewerProps) {
+export default function ResponseViewer({ response, loading, error, onSaveHeader }: ResponseViewerProps) {
   const [activeTab, setActiveTab] = useState<TabType>('body');
   const [viewMode, setViewMode] = useState<ViewMode>('formatted');
   const [copied, setCopied] = useState(false);
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [saveHeaderName, setSaveHeaderName] = useState('');
+  const [saveHeaderKey, setSaveHeaderKey] = useState('');
+  const [saveHeaderValue, setSaveHeaderValue] = useState('');
+  const [showExtractDialog, setShowExtractDialog] = useState(false);
+  const [extractPath, setExtractPath] = useState('access_token');
   
   if (loading) {
     return (
@@ -56,10 +64,6 @@ export default function ResponseViewer({ response, loading, error }: ResponseVie
               <div className="flex items-center gap-4">
                 <kbd className="px-2 py-1 bg-gray-700 text-gray-300 rounded text-sm font-mono">Ctrl+Enter</kbd>
                 <span className="text-gray-400 text-sm">Send request</span>
-              </div>
-              <div className="flex items-center gap-4">
-                <kbd className="px-2 py-1 bg-gray-700 text-gray-300 rounded text-sm font-mono">Ctrl+S</kbd>
-                <span className="text-gray-400 text-sm">Save request</span>
               </div>
               <div className="flex items-center gap-4">
                 <kbd className="px-2 py-1 bg-gray-700 text-gray-300 rounded text-sm font-mono">Ctrl+W</kbd>
@@ -112,13 +116,76 @@ export default function ResponseViewer({ response, loading, error }: ResponseVie
     }
   };
 
+  const handleSaveHeader = (headerKey: string, headerValue: string, suggestedName?: string) => {
+    // Validate that headerValue is not empty or undefined
+    if (!headerValue || headerValue === 'undefined' || headerValue === 'null' || headerValue.trim() === '') {
+      console.warn('Cannot save header with empty or invalid value');
+      return;
+    }
+    setSaveHeaderKey(headerKey);
+    setSaveHeaderValue(headerValue);
+    setSaveHeaderName(suggestedName || headerKey);
+    setShowSaveDialog(true);
+  };
+
+  const confirmSaveHeader = () => {
+    if (onSaveHeader && saveHeaderName.trim() && saveHeaderKey.trim() && saveHeaderValue.trim()) {
+      const header = new main.Header({
+        id: `header-${Date.now()}`,
+        name: saveHeaderName.trim(),
+        headerKey: saveHeaderKey.trim(),
+        value: saveHeaderValue.trim(),
+      });
+      onSaveHeader(header);
+      setShowSaveDialog(false);
+      setSaveHeaderName('');
+      setSaveHeaderKey('');
+      setSaveHeaderValue('');
+    }
+  };
+
+  const extractValueFromJSON = (obj: any, path: string): any => {
+    const keys = path.split('.');
+    let value = obj;
+    for (const key of keys) {
+      if (value && typeof value === 'object' && key in value) {
+        value = value[key];
+      } else {
+        return null;
+      }
+    }
+    return value;
+  };
+
+  const handleExtractToken = () => {
+    if (!response || !extractPath.trim()) return;
+    
+    try {
+      const jsonData = JSON.parse(response.body);
+      const value = extractValueFromJSON(jsonData, extractPath.trim());
+      
+      if (value) {
+        const tokenValue = typeof value === 'string' ? value : JSON.stringify(value);
+        handleSaveHeader('Authorization', `Bearer ${tokenValue}`, 'Extracted Token');
+        setShowExtractDialog(false);
+      } else {
+        alert(`Path "${extractPath}" not found in response`);
+      }
+    } catch (err) {
+      alert('Failed to parse JSON or extract value');
+    }
+  };
+
   const parseCookies = (headers: Record<string, string>): Array<{name: string, value: string}> => {
     const cookies: Array<{name: string, value: string}> = [];
-    const setCookieHeaders = Object.entries(headers)
-      .filter(([key]) => key.toLowerCase() === 'set-cookie')
-      .map(([, value]) => value);
+    const setCookieHeader = Object.entries(headers)
+      .find(([key]) => key.toLowerCase() === 'set-cookie')?.[1];
     
-    setCookieHeaders.forEach(cookieStr => {
+    if (!setCookieHeader) return cookies;
+    
+    const cookieLines = setCookieHeader.split('\n');
+    
+    cookieLines.forEach(cookieStr => {
       const parts = cookieStr.split(';')[0].split('=');
       if (parts.length >= 2) {
         cookies.push({ 
@@ -192,27 +259,6 @@ export default function ResponseViewer({ response, loading, error }: ResponseVie
             >
               Cookies
             </button>
-            {response?.scriptResult && (
-              <button
-                onClick={() => setActiveTab('tests')}
-                className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-                  activeTab === 'tests'
-                    ? 'border-blue-500 text-blue-500'
-                    : 'border-transparent text-gray-400 hover:text-gray-300'
-                }`}
-              >
-                Tests
-                {response.scriptResult.tests && response.scriptResult.tests.length > 0 && (
-                  <span className={`ml-2 px-1.5 py-0.5 text-xs rounded ${
-                    response.scriptResult.tests.every(t => t.passed)
-                      ? 'bg-green-600'
-                      : 'bg-red-600'
-                  }`}>
-                    {response.scriptResult.tests.filter(t => t.passed).length}/{response.scriptResult.tests.length}
-                  </span>
-                )}
-              </button>
-            )}
           </div>
           {activeTab === 'body' && (
             <div className="flex gap-2">
@@ -254,6 +300,23 @@ export default function ResponseViewer({ response, loading, error }: ResponseVie
                 {copied ? <Check size={14} /> : <Copy size={14} />}
                 <span>{copied ? 'Copied!' : 'Copy'}</span>
               </button>
+              {(() => {
+                try {
+                  JSON.parse(response?.body || '');
+                  return (
+                    <button
+                      onClick={() => setShowExtractDialog(true)}
+                      className="px-3 py-1 text-xs rounded bg-purple-600 text-white hover:bg-purple-700 flex items-center gap-1.5"
+                      title="Extract token from JSON"
+                    >
+                      <Download size={14} />
+                      <span>Extract</span>
+                    </button>
+                  );
+                } catch {
+                  return null;
+                }
+              })()}
             </div>
           )}
         </div>
@@ -280,9 +343,18 @@ export default function ResponseViewer({ response, loading, error }: ResponseVie
           {activeTab === 'headers' && (
             <div className="bg-gray-800 p-4 rounded">
               {Object.entries(response.headers || {}).map(([key, value]) => (
-                <div key={key} className="flex gap-2 text-sm mb-1">
-                  <span className="text-blue-400 font-medium">{key}:</span>
-                  <span className="text-gray-200">{String(value)}</span>
+                <div key={key} className="flex gap-2 text-sm mb-2 pb-2 border-b border-gray-700 last:border-0 items-start">
+                  <span className="text-blue-400 font-medium min-w-[150px]">{key}:</span>
+                  <span className="text-gray-200 flex-1 break-all">{String(value)}</span>
+                  {onSaveHeader && (
+                    <button
+                      onClick={() => handleSaveHeader(key, String(value))}
+                      className="text-green-500 hover:text-green-400 p-1 flex-shrink-0"
+                      title="Save as header preset"
+                    >
+                      <Save size={14} />
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
@@ -291,92 +363,132 @@ export default function ResponseViewer({ response, loading, error }: ResponseVie
           {activeTab === 'cookies' && (
             <div className="bg-gray-800 p-4 rounded">
               {parseCookies(response.headers || {}).length > 0 ? (
-                parseCookies(response.headers || {}).map((cookie, index) => (
-                  <div key={index} className="flex gap-2 text-sm mb-2 pb-2 border-b border-gray-700 last:border-0">
-                    <span className="text-purple-400 font-medium min-w-[120px]">{cookie.name}:</span>
-                    <span className="text-gray-200 break-all">{cookie.value}</span>
+                <>
+                  <div className="mb-4 pb-2 border-b border-gray-600">
+                    {onSaveHeader && (
+                      <button
+                        onClick={() => {
+                          const allCookies = parseCookies(response.headers || {})
+                            .map(c => `${c.name}=${c.value}`)
+                            .join('; ');
+                          if (allCookies && allCookies.trim()) {
+                            handleSaveHeader('Cookie', allCookies, 'Response Cookies');
+                          }
+                        }}
+                        className="text-green-500 hover:text-green-400 text-sm flex items-center gap-2"
+                      >
+                        <Save size={16} />
+                        <span>Save All Cookies</span>
+                      </button>
+                    )}
                   </div>
-                ))
+                  {parseCookies(response.headers || {}).map((cookie, index) => (
+                    <div key={index} className="flex gap-2 text-sm mb-2 pb-2 border-b border-gray-700 last:border-0">
+                      <span className="text-purple-400 font-medium min-w-[120px]">{cookie.name}:</span>
+                      <span className="text-gray-200 break-all flex-1">{cookie.value}</span>
+                    </div>
+                  ))}
+                </>
               ) : (
                 <div className="text-gray-500 text-center py-4">No cookies in response</div>
               )}
             </div>
           )}
-
-          {activeTab === 'tests' && response?.scriptResult && (
-            <div className="space-y-4">
-              {response.scriptResult.error && (
-                <div className="bg-red-900/20 border border-red-700 rounded p-4">
-                  <div className="flex items-start gap-2">
-                    <XCircle className="text-red-500 flex-shrink-0 mt-0.5" size={20} />
-                    <div>
-                      <h4 className="text-red-400 font-semibold mb-1">Script Error</h4>
-                      <pre className="text-sm text-gray-300 whitespace-pre-wrap font-mono">{response.scriptResult.error}</pre>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {response.scriptResult.tests && response.scriptResult.tests.length > 0 && (
-                <div className="bg-gray-800 p-4 rounded">
-                  <h4 className="text-gray-300 font-semibold mb-3 flex items-center gap-2">
-                    Test Results
-                    <span className="text-xs text-gray-500">
-                      ({response.scriptResult.tests.filter(t => t.passed).length} / {response.scriptResult.tests.length} passed)
-                    </span>
-                  </h4>
-                  <div className="space-y-2">
-                    {response.scriptResult.tests.map((test, index) => (
-                      <div key={index} className={`p-3 rounded border ${
-                        test.passed 
-                          ? 'bg-green-900/20 border-green-700' 
-                          : 'bg-red-900/20 border-red-700'
-                      }`}>
-                        <div className="flex items-start gap-2">
-                          {test.passed ? (
-                            <CheckCircle className="text-green-500 flex-shrink-0 mt-0.5" size={16} />
-                          ) : (
-                            <XCircle className="text-red-500 flex-shrink-0 mt-0.5" size={16} />
-                          )}
-                          <div className="flex-1">
-                            <div className={`font-medium text-sm ${test.passed ? 'text-green-300' : 'text-red-300'}`}>
-                              {test.name}
-                            </div>
-                            {test.error && (
-                              <div className="mt-1 text-xs text-gray-400 font-mono">
-                                {test.error}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {response.scriptResult.consoleOutput && response.scriptResult.consoleOutput.length > 0 && (
-                <div className="bg-gray-800 p-4 rounded">
-                  <h4 className="text-gray-300 font-semibold mb-3">Console Output</h4>
-                  <div className="bg-gray-900 p-3 rounded font-mono text-xs text-gray-300 space-y-1">
-                    {response.scriptResult.consoleOutput.map((output, index) => (
-                      <div key={index} className="border-b border-gray-700 last:border-0 pb-1 last:pb-0">
-                        {output}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {!response.scriptResult.tests?.length && !response.scriptResult.consoleOutput?.length && !response.scriptResult.error && (
-                <div className="text-gray-500 text-center py-8">
-                  No test results or console output
-                </div>
-              )}
-            </div>
-          )}
         </div>
       </div>
+
+      {showSaveDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-gray-800 rounded-lg p-6 w-[500px]">
+            <h3 className="text-lg font-semibold text-white mb-4">Save Header</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm text-gray-300 mb-1">Name</label>
+                <input
+                  type="text"
+                  value={saveHeaderName}
+                  onChange={(e) => setSaveHeaderName(e.target.value)}
+                  placeholder="e.g., Session Cookie"
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                  autoFocus
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-300 mb-1">Header Key</label>
+                <input
+                  type="text"
+                  value={saveHeaderKey}
+                  onChange={(e) => setSaveHeaderKey(e.target.value)}
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-300 mb-1">Value</label>
+                <textarea
+                  value={saveHeaderValue}
+                  onChange={(e) => setSaveHeaderValue(e.target.value)}
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white font-mono text-sm resize-none"
+                  rows={4}
+                />
+              </div>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={confirmSaveHeader}
+                className="flex-1 py-2 bg-green-600 hover:bg-green-700 text-white rounded"
+              >
+                Save
+              </button>
+              <button
+                onClick={() => setShowSaveDialog(false)}
+                className="flex-1 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showExtractDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-gray-800 rounded-lg p-6 w-[500px]">
+            <h3 className="text-lg font-semibold text-white mb-4">Extract Token from JSON</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm text-gray-300 mb-1">
+                  JSON Path (dot notation)
+                </label>
+                <input
+                  type="text"
+                  value={extractPath}
+                  onChange={(e) => setExtractPath(e.target.value)}
+                  placeholder="e.g., data.access_token or token"
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white font-mono text-sm"
+                  autoFocus
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Examples: "access_token", "data.token", "response.auth.token"
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={handleExtractToken}
+                className="flex-1 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded"
+              >
+                Extract
+              </button>
+              <button
+                onClick={() => setShowExtractDialog(false)}
+                className="flex-1 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
