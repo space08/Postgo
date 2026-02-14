@@ -1,0 +1,1309 @@
+openapi: "3.0.1"
+info:
+  title: "API Documentation"
+  version: "1.0"
+paths:
+  /tag/list:
+    get:
+      summary: "标签列表"
+      description: "标签列表"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  code:
+                    type: "integer"
+                    description: "响应码：0-成功，1-失败"
+                  message:
+                    type: "string"
+                    description: "响应信息"
+                  data:
+                    type: "array"
+                    description: "响应数据"
+                    items:
+                      type: "object"
+                      properties:
+                        id:
+                          type: "integer"
+                          description: ""
+                        name:
+                          type: "string"
+                          description: ""
+                        slug:
+                          type: "string"
+                          description: ""
+                        articleCount:
+                          type: "integer"
+                          description: ""
+                        createdAt:
+                          type: "string"
+                          description: ""
+                      description: "标签响应数据传输对象"
+  /tag/detail:
+    get:
+      summary: "标签详情"
+      description: "标签详情"
+      parameters:
+      - name: "id"
+        in: "query"
+        description: ""
+        required: true
+        schema:
+          type: "integer"
+          nullable: false
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  code:
+                    type: "integer"
+                    description: "响应码：0-成功，1-失败"
+                  message:
+                    type: "string"
+                    description: "响应信息"
+                  data:
+                    type: "object"
+                    properties:
+                      id:
+                        type: "integer"
+                        description: ""
+                      name:
+                        type: "string"
+                        description: ""
+                      slug:
+                        type: "string"
+                        description: ""
+                      articleCount:
+                        type: "integer"
+                        description: ""
+                      createdAt:
+                        type: "string"
+                        description: ""
+                    description: "响应数据"
+  /tag/add:
+    post:
+      summary: "新增标签"
+      description: "新增标签"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                name:
+                  type: "string"
+                  description: ""
+                slug:
+                  type: "string"
+                  description: ""
+              description: ""
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  code:
+                    type: "integer"
+                    description: "响应码：0-成功，1-失败"
+                  message:
+                    type: "string"
+                    description: "响应信息"
+                  data:
+                    type: "integer"
+                    description: "响应数据"
+  /tag/delete:
+    delete:
+      summary: "删除标签"
+      description: "删除标签"
+      parameters:
+      - name: "id"
+        in: "query"
+        description: ""
+        required: true
+        schema:
+          type: "integer"
+          nullable: false
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  code:
+                    type: "integer"
+                    description: "响应码：0-成功，1-失败"
+                  message:
+                    type: "string"
+                    description: "响应信息"
+                  data:
+                    type: "string"
+                    description: "响应数据"
+  /user/login:
+    post:
+      summary: "用户登录"
+      description: "用户登录"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                username:
+                  type: "string"
+                  description: "用户名或邮箱"
+                password:
+                  type: "string"
+                  description: "密码（明文，前端传入）"
+              description: "登录信息"
+      responses:
+        "200":
+          description: "统一响应结果"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  code:
+                    type: "integer"
+                    description: "响应码：0-成功，1-失败"
+                  message:
+                    type: "string"
+                    description: "响应信息"
+                  data:
+                    type: "object"
+                    properties:
+                      id:
+                        type: "integer"
+                        description: ""
+                      username:
+                        type: "string"
+                        description: ""
+                      email:
+                        type: "string"
+                        description: ""
+                      avatarUrl:
+                        type: "string"
+                        description: ""
+                      bio:
+                        type: "string"
+                        description: ""
+                      status:
+                        type: "string"
+                        description: ""
+                      token:
+                        type: "string"
+                        description: "JWT token"
+                    description: "响应数据"
+                description: "统一响应结果"
+  /user/logout:
+    post:
+      summary: "用户注销登录"
+      description: "用户注销登录"
+      responses:
+        "200":
+          description: "统一响应结果"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  code:
+                    type: "integer"
+                    description: "响应码：0-成功，1-失败"
+                  message:
+                    type: "string"
+                    description: "响应信息"
+                  data:
+                    type: "string"
+                    description: "响应数据"
+                description: "统一响应结果"
+  /user/info:
+    get:
+      summary: "获取当前登录用户信息（需要token）"
+      description: "获取当前登录用户信息（需要token）"
+      responses:
+        "200":
+          description: "统一响应结果"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  code:
+                    type: "integer"
+                    description: "响应码：0-成功，1-失败"
+                  message:
+                    type: "string"
+                    description: "响应信息"
+                  data:
+                    type: "object"
+                    properties:
+                      id:
+                        type: "integer"
+                        description: ""
+                      username:
+                        type: "string"
+                        description: ""
+                      email:
+                        type: "string"
+                        description: ""
+                      avatarUrl:
+                        type: "string"
+                        description: ""
+                      bio:
+                        type: "string"
+                        description: ""
+                      status:
+                        type: "string"
+                        description: ""
+                      token:
+                        type: "string"
+                        description: "JWT token"
+                    description: "响应数据"
+                description: "统一响应结果"
+  /article/list:
+    get:
+      summary: "获取文章列表"
+      description: "获取文章列表"
+      parameters:
+      - name: "categoryId"
+        in: "query"
+        description: ""
+        required: false
+        schema:
+          type: "integer"
+          nullable: false
+      responses:
+        "200":
+          description: "统一响应结果"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  code:
+                    type: "integer"
+                    description: "响应码：0-成功，1-失败"
+                  message:
+                    type: "string"
+                    description: "响应信息"
+                  data:
+                    type: "array"
+                    description: "响应数据"
+                    items:
+                      type: "object"
+                      properties:
+                        id:
+                          type: "integer"
+                          description: ""
+                        title:
+                          type: "string"
+                          description: ""
+                        summary:
+                          type: "string"
+                          description: ""
+                        author:
+                          type: "string"
+                          description: "作者用户名"
+                        coverUrl:
+                          type: "string"
+                          description: ""
+                        viewCount:
+                          type: "integer"
+                          description: ""
+                        likeCount:
+                          type: "integer"
+                          description: ""
+                        commentCount:
+                          type: "integer"
+                          description: ""
+                        createdAt:
+                          type: "string"
+                          description: ""
+                        publishedAt:
+                          type: "string"
+                          description: ""
+                      description: "文章列表数据传输对象（不包含完整内容，用于列表展示）"
+                description: "统一响应结果"
+  /article/page:
+    get:
+      summary: "获取分页文章列表"
+      description: "获取分页文章列表"
+      parameters:
+      - name: "page"
+        in: "query"
+        description: "页码，从1开始"
+        required: true
+        schema:
+          type: "integer"
+          nullable: false
+      - name: "size"
+        in: "query"
+        description: "每页大小"
+        required: true
+        schema:
+          type: "integer"
+          nullable: false
+      - name: "categoryId"
+        in: "query"
+        description: ""
+        required: false
+        schema:
+          type: "integer"
+          nullable: false
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  code:
+                    type: "integer"
+                    description: "响应码：0-成功，1-失败"
+                  message:
+                    type: "string"
+                    description: "响应信息"
+                  data:
+                    type: "object"
+                    properties:
+                      page:
+                        type: "integer"
+                        description: ""
+                      size:
+                        type: "integer"
+                        description: ""
+                      total:
+                        type: "integer"
+                        description: ""
+                        format: "int64"
+                      records:
+                        type: "array"
+                        description: ""
+                        items:
+                          type: "object"
+                          properties:
+                            id:
+                              type: "integer"
+                              description: ""
+                            title:
+                              type: "string"
+                              description: ""
+                            summary:
+                              type: "string"
+                              description: ""
+                            author:
+                              type: "string"
+                              description: "作者用户名"
+                            coverUrl:
+                              type: "string"
+                              description: ""
+                            viewCount:
+                              type: "integer"
+                              description: ""
+                            likeCount:
+                              type: "integer"
+                              description: ""
+                            commentCount:
+                              type: "integer"
+                              description: ""
+                            createdAt:
+                              type: "string"
+                              description: ""
+                            publishedAt:
+                              type: "string"
+                              description: ""
+                          description: "文章列表数据传输对象（不包含完整内容，用于列表展示）"
+                    description: "响应数据"
+  /article/detail:
+    get:
+      summary: "获取文章详情"
+      description: "获取文章详情"
+      parameters:
+      - name: "id"
+        in: "query"
+        description: "文章ID"
+        required: true
+        schema:
+          type: "integer"
+          nullable: false
+      responses:
+        "200":
+          description: "统一响应结果"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  code:
+                    type: "integer"
+                    description: "响应码：0-成功，1-失败"
+                  message:
+                    type: "string"
+                    description: "响应信息"
+                  data:
+                    type: "object"
+                    properties:
+                      id:
+                        type: "integer"
+                        description: ""
+                      title:
+                        type: "string"
+                        description: ""
+                      summary:
+                        type: "string"
+                        description: ""
+                      content:
+                        type: "string"
+                        description: "完整内容"
+                      author:
+                        type: "string"
+                        description: "作者用户名"
+                      coverUrl:
+                        type: "string"
+                        description: ""
+                      viewCount:
+                        type: "integer"
+                        description: ""
+                      likeCount:
+                        type: "integer"
+                        description: ""
+                      commentCount:
+                        type: "integer"
+                        description: ""
+                      createdAt:
+                        type: "string"
+                        description: ""
+                      updatedAt:
+                        type: "string"
+                        description: ""
+                      publishedAt:
+                        type: "string"
+                        description: ""
+                    description: "响应数据"
+                description: "统一响应结果"
+  /article/hot:
+    get:
+      summary: "热门文章列表（Top N）"
+      description: "热门文章列表（Top N）"
+      parameters:
+      - name: "n"
+        in: "query"
+        description: "返回前n条（默认10）"
+        required: false
+        schema:
+          type: "integer"
+          nullable: false
+          default: "10"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  code:
+                    type: "integer"
+                    description: "响应码：0-成功，1-失败"
+                  message:
+                    type: "string"
+                    description: "响应信息"
+                  data:
+                    type: "array"
+                    description: "响应数据"
+                    items:
+                      type: "object"
+                      properties:
+                        id:
+                          type: "integer"
+                          description: ""
+                        title:
+                          type: "string"
+                          description: ""
+                        summary:
+                          type: "string"
+                          description: ""
+                        author:
+                          type: "string"
+                          description: "作者用户名"
+                        coverUrl:
+                          type: "string"
+                          description: ""
+                        viewCount:
+                          type: "integer"
+                          description: ""
+                        likeCount:
+                          type: "integer"
+                          description: ""
+                        commentCount:
+                          type: "integer"
+                          description: ""
+                        createdAt:
+                          type: "string"
+                          description: ""
+                        publishedAt:
+                          type: "string"
+                          description: ""
+                      description: "文章列表数据传输对象（不包含完整内容，用于列表展示）"
+  /article/add:
+    post:
+      summary: "发布新文章（需要登录）"
+      description: "发布新文章（需要登录）"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                title:
+                  type: "string"
+                  description: "文章标题（必填）"
+                summary:
+                  type: "string"
+                  description: "文章摘要（可选）"
+                content:
+                  type: "string"
+                  description: "文章内容（必填）"
+                categoryId:
+                  type: "integer"
+                  description: "分类ID（可选）"
+                coverUrl:
+                  type: "string"
+                  description: "封面图URL（可选）"
+              description: "文章发布信息"
+      responses:
+        "200":
+          description: "统一响应结果"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  code:
+                    type: "integer"
+                    description: "响应码：0-成功，1-失败"
+                  message:
+                    type: "string"
+                    description: "响应信息"
+                  data:
+                    type: "integer"
+                    description: "响应数据"
+                description: "统一响应结果"
+  /comment/list:
+    get:
+      summary: "评论列表（按文章ID）"
+      description: "评论列表（按文章ID）"
+      parameters:
+      - name: "articleId"
+        in: "query"
+        description: ""
+        required: true
+        schema:
+          type: "integer"
+          nullable: false
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  code:
+                    type: "integer"
+                    description: "响应码：0-成功，1-失败"
+                  message:
+                    type: "string"
+                    description: "响应信息"
+                  data:
+                    type: "array"
+                    description: "响应数据"
+                    items:
+                      type: "object"
+                      properties:
+                        id:
+                          type: "integer"
+                          description: ""
+                        articleId:
+                          type: "integer"
+                          description: ""
+                        authorId:
+                          type: "integer"
+                          description: ""
+                        authorName:
+                          type: "string"
+                          description: ""
+                        content:
+                          type: "string"
+                          description: ""
+                        status:
+                          type: "string"
+                          description: ""
+                        isReply:
+                          type: "boolean"
+                          description: ""
+                        parentCommentId:
+                          type: "integer"
+                          description: ""
+                        likeCount:
+                          type: "integer"
+                          description: ""
+                        createdAt:
+                          type: "string"
+                          description: ""
+                      description: "评论响应数据传输对象"
+  /comment/detail:
+    get:
+      summary: "评论详情"
+      description: "评论详情"
+      parameters:
+      - name: "id"
+        in: "query"
+        description: ""
+        required: true
+        schema:
+          type: "integer"
+          nullable: false
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  code:
+                    type: "integer"
+                    description: "响应码：0-成功，1-失败"
+                  message:
+                    type: "string"
+                    description: "响应信息"
+                  data:
+                    type: "object"
+                    properties:
+                      id:
+                        type: "integer"
+                        description: ""
+                      articleId:
+                        type: "integer"
+                        description: ""
+                      authorId:
+                        type: "integer"
+                        description: ""
+                      authorName:
+                        type: "string"
+                        description: ""
+                      content:
+                        type: "string"
+                        description: ""
+                      status:
+                        type: "string"
+                        description: ""
+                      isReply:
+                        type: "boolean"
+                        description: ""
+                      parentCommentId:
+                        type: "integer"
+                        description: ""
+                      likeCount:
+                        type: "integer"
+                        description: ""
+                      createdAt:
+                        type: "string"
+                        description: ""
+                    description: "响应数据"
+  /comment/add:
+    post:
+      summary: "新增评论（允许匿名；若携带token则自动识别作者）"
+      description: "新增评论（允许匿名；若携带token则自动识别作者）"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        description: ""
+        required: false
+        schema: {}
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                articleId:
+                  type: "integer"
+                  description: ""
+                content:
+                  type: "string"
+                  description: ""
+                authorName:
+                  type: "string"
+                  description: "匿名评论时可传（若携带token则可忽略）"
+                authorEmail:
+                  type: "string"
+                  description: ""
+                parentCommentId:
+                  type: "integer"
+                  description: "回复评论：父评论ID"
+              description: ""
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  code:
+                    type: "integer"
+                    description: "响应码：0-成功，1-失败"
+                  message:
+                    type: "string"
+                    description: "响应信息"
+                  data:
+                    type: "integer"
+                    description: "响应数据"
+  /comment/delete:
+    delete:
+      summary: "删除评论"
+      description: "删除评论"
+      parameters:
+      - name: "id"
+        in: "query"
+        description: ""
+        required: true
+        schema:
+          type: "integer"
+          nullable: false
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  code:
+                    type: "integer"
+                    description: "响应码：0-成功，1-失败"
+                  message:
+                    type: "string"
+                    description: "响应信息"
+                  data:
+                    type: "string"
+                    description: "响应数据"
+  /category/list:
+    get:
+      summary: "分类列表"
+      description: "分类列表"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  code:
+                    type: "integer"
+                    description: "响应码：0-成功，1-失败"
+                  message:
+                    type: "string"
+                    description: "响应信息"
+                  data:
+                    type: "array"
+                    description: "响应数据"
+                    items:
+                      type: "object"
+                      properties:
+                        id:
+                          type: "integer"
+                          description: ""
+                        name:
+                          type: "string"
+                          description: ""
+                        slug:
+                          type: "string"
+                          description: ""
+                        description:
+                          type: "string"
+                          description: ""
+                        articleCount:
+                          type: "integer"
+                          description: ""
+                        createdAt:
+                          type: "string"
+                          description: ""
+                      description: "分类响应数据传输对象"
+  /category/detail:
+    get:
+      summary: "分类详情"
+      description: "分类详情"
+      parameters:
+      - name: "id"
+        in: "query"
+        description: ""
+        required: true
+        schema:
+          type: "integer"
+          nullable: false
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  code:
+                    type: "integer"
+                    description: "响应码：0-成功，1-失败"
+                  message:
+                    type: "string"
+                    description: "响应信息"
+                  data:
+                    type: "object"
+                    properties:
+                      id:
+                        type: "integer"
+                        description: ""
+                      name:
+                        type: "string"
+                        description: ""
+                      slug:
+                        type: "string"
+                        description: ""
+                      description:
+                        type: "string"
+                        description: ""
+                      articleCount:
+                        type: "integer"
+                        description: ""
+                      createdAt:
+                        type: "string"
+                        description: ""
+                    description: "响应数据"
+  /category/add:
+    post:
+      summary: "新增分类"
+      description: "新增分类"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                name:
+                  type: "string"
+                  description: ""
+                slug:
+                  type: "string"
+                  description: ""
+                description:
+                  type: "string"
+                  description: ""
+              description: ""
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  code:
+                    type: "integer"
+                    description: "响应码：0-成功，1-失败"
+                  message:
+                    type: "string"
+                    description: "响应信息"
+                  data:
+                    type: "integer"
+                    description: "响应数据"
+  /category/delete:
+    delete:
+      summary: "删除分类"
+      description: "删除分类"
+      parameters:
+      - name: "id"
+        in: "query"
+        description: ""
+        required: true
+        schema:
+          type: "integer"
+          nullable: false
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  code:
+                    type: "integer"
+                    description: "响应码：0-成功，1-失败"
+                  message:
+                    type: "string"
+                    description: "响应信息"
+                  data:
+                    type: "string"
+                    description: "响应数据"
+  /articleTag/list:
+    get:
+      summary: "关联列表（可选参数：articleId 或 tagId）"
+      description: "关联列表（可选参数：articleId 或 tagId）"
+      parameters:
+      - name: "articleId"
+        in: "query"
+        description: ""
+        required: false
+        schema:
+          type: "integer"
+          nullable: false
+      - name: "tagId"
+        in: "query"
+        description: ""
+        required: false
+        schema:
+          type: "integer"
+          nullable: false
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  code:
+                    type: "integer"
+                    description: "响应码：0-成功，1-失败"
+                  message:
+                    type: "string"
+                    description: "响应信息"
+                  data:
+                    type: "array"
+                    description: "响应数据"
+                    items:
+                      type: "object"
+                      properties:
+                        articleId:
+                          type: "integer"
+                          description: ""
+                        tagId:
+                          type: "integer"
+                          description: ""
+                      description: "文章-标签关联响应数据传输对象"
+  /articleTag/detail:
+    get:
+      summary: "关联详情"
+      description: "关联详情"
+      parameters:
+      - name: "articleId"
+        in: "query"
+        description: ""
+        required: true
+        schema:
+          type: "integer"
+          nullable: false
+      - name: "tagId"
+        in: "query"
+        description: ""
+        required: true
+        schema:
+          type: "integer"
+          nullable: false
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  code:
+                    type: "integer"
+                    description: "响应码：0-成功，1-失败"
+                  message:
+                    type: "string"
+                    description: "响应信息"
+                  data:
+                    type: "object"
+                    properties:
+                      articleId:
+                        type: "integer"
+                        description: ""
+                      tagId:
+                        type: "integer"
+                        description: ""
+                    description: "响应数据"
+  /articleTag/add:
+    post:
+      summary: "新增关联"
+      description: "新增关联"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                articleId:
+                  type: "integer"
+                  description: ""
+                tagId:
+                  type: "integer"
+                  description: ""
+              description: ""
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  code:
+                    type: "integer"
+                    description: "响应码：0-成功，1-失败"
+                  message:
+                    type: "string"
+                    description: "响应信息"
+                  data:
+                    type: "string"
+                    description: "响应数据"
+  /articleTag/delete:
+    delete:
+      summary: "删除关联"
+      description: "删除关联"
+      parameters:
+      - name: "articleId"
+        in: "query"
+        description: ""
+        required: true
+        schema:
+          type: "integer"
+          nullable: false
+      - name: "tagId"
+        in: "query"
+        description: ""
+        required: true
+        schema:
+          type: "integer"
+          nullable: false
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  code:
+                    type: "integer"
+                    description: "响应码：0-成功，1-失败"
+                  message:
+                    type: "string"
+                    description: "响应信息"
+                  data:
+                    type: "string"
+                    description: "响应数据"
+components:
+  schemas:
+    标签响应数据传输对象:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          description: ""
+        name:
+          type: "string"
+          description: ""
+        slug:
+          type: "string"
+          description: ""
+        articleCount:
+          type: "integer"
+          description: ""
+        createdAt:
+          type: "string"
+          description: ""
+      description: "响应数据"
+    用户信息响应数据传输对象（不包含敏感信息）:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          description: ""
+        username:
+          type: "string"
+          description: ""
+        email:
+          type: "string"
+          description: ""
+        avatarUrl:
+          type: "string"
+          description: ""
+        bio:
+          type: "string"
+          description: ""
+        status:
+          type: "string"
+          description: ""
+        token:
+          type: "string"
+          description: "JWT token"
+      description: "响应数据"
+    文章列表数据传输对象（不包含完整内容，用于列表展示）:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          description: ""
+        title:
+          type: "string"
+          description: ""
+        summary:
+          type: "string"
+          description: ""
+        author:
+          type: "string"
+          description: "作者用户名"
+        coverUrl:
+          type: "string"
+          description: ""
+        viewCount:
+          type: "integer"
+          description: ""
+        likeCount:
+          type: "integer"
+          description: ""
+        commentCount:
+          type: "integer"
+          description: ""
+        createdAt:
+          type: "string"
+          description: ""
+        publishedAt:
+          type: "string"
+          description: ""
+      description: "文章列表数据传输对象（不包含完整内容，用于列表展示）"
+    文章详情数据传输对象（包含完整内容）:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          description: ""
+        title:
+          type: "string"
+          description: ""
+        summary:
+          type: "string"
+          description: ""
+        content:
+          type: "string"
+          description: "完整内容"
+        author:
+          type: "string"
+          description: "作者用户名"
+        coverUrl:
+          type: "string"
+          description: ""
+        viewCount:
+          type: "integer"
+          description: ""
+        likeCount:
+          type: "integer"
+          description: ""
+        commentCount:
+          type: "integer"
+          description: ""
+        createdAt:
+          type: "string"
+          description: ""
+        updatedAt:
+          type: "string"
+          description: ""
+        publishedAt:
+          type: "string"
+          description: ""
+      description: "响应数据"
+    评论响应数据传输对象:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          description: ""
+        articleId:
+          type: "integer"
+          description: ""
+        authorId:
+          type: "integer"
+          description: ""
+        authorName:
+          type: "string"
+          description: ""
+        content:
+          type: "string"
+          description: ""
+        status:
+          type: "string"
+          description: ""
+        isReply:
+          type: "boolean"
+          description: ""
+        parentCommentId:
+          type: "integer"
+          description: ""
+        likeCount:
+          type: "integer"
+          description: ""
+        createdAt:
+          type: "string"
+          description: ""
+      description: "响应数据"
+    分类响应数据传输对象:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          description: ""
+        name:
+          type: "string"
+          description: ""
+        slug:
+          type: "string"
+          description: ""
+        description:
+          type: "string"
+          description: ""
+        articleCount:
+          type: "integer"
+          description: ""
+        createdAt:
+          type: "string"
+          description: ""
+      description: "响应数据"
+    文章-标签关联响应数据传输对象:
+      type: "object"
+      properties:
+        articleId:
+          type: "integer"
+          description: ""
+        tagId:
+          type: "integer"
+          description: ""
+      description: "响应数据"

@@ -136,6 +136,23 @@ export default function RequestEditor({ request, onRequestChange, onSend, header
     }
   }, [request.method, activeTab]);
 
+  useEffect(() => {
+    const supportsBody = request.method === 'POST' || request.method === 'PUT' || request.method === 'PATCH';
+    const hasBody = request.body && (
+      (request.body.content && request.body.content.trim() !== '') ||
+      (request.body.formData && request.body.formData.length > 0)
+    );
+    const hasParams = request.params && request.params.length > 0;
+
+    if (supportsBody && hasBody) {
+      setActiveTab('body');
+    } else if (hasParams) {
+      setActiveTab('params');
+    } else {
+      setActiveTab('params');
+    }
+  }, [request.id]);
+
   const addHeader = () => {
     updateHeaders([...request.headers, new main.KeyValue({ key: '', value: '', enabled: true })]);
   };
@@ -1264,7 +1281,7 @@ export default function RequestEditor({ request, onRequestChange, onSend, header
                     <span className="text-xs text-gray-500">Executed before sending the request</span>
                   </div>
                   <textarea
-                    value={request.scripts?.preRequest || ''}
+                    value={request.scripts?.preRequest || '`// Example: Set environment variable\n// pm.environment.set("token", "abc123");\n\n// Available APIs:\n// - pm.environment.get/set\n// - pm.request\n// - console.log`'}
                     onChange={(e) => {
                       const updated = new main.HttpRequest(request);
                       if (!updated.scripts) {
