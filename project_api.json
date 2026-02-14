@@ -1,0 +1,3177 @@
+[
+  {
+    "id": "e72a4e86-68a9-4341-8a7e-d26f2b565b70",
+    "name": "doMyCourse",
+    "method": "GET",
+    "url": "/course/myCourse",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "b372d7c8-2d1d-42d5-a39b-9fbfa28cb6a3",
+    "name": "submit",
+    "method": "POST",
+    "url": "/report/submit",
+    "headers": [],
+    "params": [
+      {
+        "key": "eno",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "cno",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "body": {
+      "type": "form-data",
+      "formData": [
+        {
+          "key": "file",
+          "value": "",
+          "enabled": true,
+          "type": "file"
+        }
+      ]
+    },
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "b97d5fd7-bbec-401c-b5b4-c7e708349c9b",
+    "name": "isLoggedIn",
+    "method": "GET",
+    "url": "/user-test/is-logged-in",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "059f9fc4-fbb2-43e9-b531-bcb14dcd732f",
+    "name": "createTest",
+    "method": "POST",
+    "url": "/test/create",
+    "headers": [
+      {
+        "key": "Content-Type",
+        "value": "application/json",
+        "enabled": true
+      }
+    ],
+    "params": [],
+    "body": {
+      "type": "json",
+      "content": "{\n  \"key\": \"\"\n}"
+    },
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "4f076404-ea8a-4104-846c-a825e43989c7",
+    "name": "getStudentTestRecords",
+    "method": "GET",
+    "url": "/test/student/records",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "0642eff9-9ae8-4a03-90c0-a1979da2d765",
+    "name": "update",
+    "method": "POST",
+    "url": "/user/update",
+    "headers": [],
+    "params": [
+      {
+        "key": "id",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "userName",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "phone",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "myclass",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "loginIp",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "status",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "head",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "role",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "0d5bb886-35e0-444d-a4ca-dbbbd73419ad",
+    "name": "download",
+    "method": "GET",
+    "url": "/doc/download",
+    "headers": [],
+    "params": [
+      {
+        "key": "id",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "cno",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "8cbaea2f-3838-4793-a24b-8507e3847add",
+    "name": "deleteTest",
+    "method": "DELETE",
+    "url": "/test/{id}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "67274630-f753-4ca3-b014-d35be149b0b0",
+    "name": "doUpdateCourse",
+    "method": "POST",
+    "url": "/course/updateCourse",
+    "headers": [],
+    "params": [
+      {
+        "key": "id",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "cname",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "num",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "status",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "tno",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "inviteCode",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "semester",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "tname",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "stuNum",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "bb7f76e6-3e91-4a5b-a311-05b74df45999",
+    "name": "doDelCourse",
+    "method": "POST",
+    "url": "/course/doDelCourse",
+    "headers": [],
+    "params": [
+      {
+        "key": "id",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "62db0cca-376a-414d-be45-aa06ee80e895",
+    "name": "getAllQuestionsByCourse",
+    "method": "GET",
+    "url": "/questionlib/debug/all/{cno}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "e4cffbd2-9976-4403-a94a-1bde839b43c3",
+    "name": "login",
+    "method": "POST",
+    "url": "/user/login",
+    "headers": [],
+    "params": [
+      {
+        "key": "phone",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "password",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "7ff17f3d-cff5-42e2-ac17-d7932dd78ece",
+    "name": "submitTest",
+    "method": "POST",
+    "url": "/test/submit",
+    "headers": [
+      {
+        "key": "Content-Type",
+        "value": "application/json",
+        "enabled": true
+      }
+    ],
+    "params": [],
+    "body": {
+      "type": "json",
+      "content": "{\n  \"key\": \"\"\n}"
+    },
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "dc5d86c8-7a0c-488d-b7d5-c517a85a0617",
+    "name": "getAllStudentRecords",
+    "method": "GET",
+    "url": "/test/all-records/{testId}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "bf32d6e8-a4ba-486d-94c2-75b6a3969f1c",
+    "name": "getTestQuestions",
+    "method": "GET",
+    "url": "/test/debug/questions/{testId}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "72b1c30d-8394-430c-8df1-ef8640e57853",
+    "name": "获取报告文件路径（添加时间戳避免缓存）",
+    "method": "GET",
+    "url": "/report/getReportPath",
+    "headers": [],
+    "params": [
+      {
+        "key": "cno",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "reportName",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "9c020437-3225-495c-844a-d936cc5eb4a9",
+    "name": "getCurrentUserId",
+    "method": "GET",
+    "url": "/user-test/current-id",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "38d1cf11-7188-4214-bce9-948addee99bc",
+    "name": "saveAnswer",
+    "method": "POST",
+    "url": "/test/save-answer",
+    "headers": [
+      {
+        "key": "Content-Type",
+        "value": "application/json",
+        "enabled": true
+      }
+    ],
+    "params": [],
+    "body": {
+      "type": "json",
+      "content": "{\n  \"key\": \"\"\n}"
+    },
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "e1847726-b8e8-40d6-a934-00fb0120c98a",
+    "name": "多人请假",
+    "method": "POST",
+    "url": "/check/leaveBatch",
+    "headers": [],
+    "params": [
+      {
+        "key": "checkRecordIdList",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "33ddcd20-06d5-4ca3-acc2-54fa859bd56e",
+    "name": "单人迟到",
+    "method": "POST",
+    "url": "/check/late",
+    "headers": [],
+    "params": [
+      {
+        "key": "checkRecordId",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "e7810380-2339-4c33-bbcf-c652ae8b223f",
+    "name": "获取考勤统计",
+    "method": "GET",
+    "url": "/stats/attendance/{cno}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "584bf7be-649d-400f-9e98-2ba21b53d588",
+    "name": "getMark",
+    "method": "GET",
+    "url": "/report/getMark",
+    "headers": [],
+    "params": [
+      {
+        "key": "id",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "02d99165-d697-49c5-b1ee-0da6188e8a90",
+    "name": "API接口 - 分析报告",
+    "method": "POST",
+    "url": "/report/analyze",
+    "headers": [],
+    "params": [
+      {
+        "key": "cno",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "reportName",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "9942189e-040d-45ed-9fb1-f7087c57e905",
+    "name": "doDel",
+    "method": "GET",
+    "url": "/doc/doDel",
+    "headers": [],
+    "params": [
+      {
+        "key": "id",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "cno",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "5b38f724-52a2-44ed-9b9b-4bcdf45d96f3",
+    "name": "doDelayTime",
+    "method": "GET",
+    "url": "/exp/doDelayTime",
+    "headers": [],
+    "params": [
+      {
+        "key": "id",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "delayTime",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "0989ed40-26aa-407b-ab76-c110e0b6f310",
+    "name": "获取指定ID的签到任务",
+    "method": "GET",
+    "url": "/check/get/{checkTaskId}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "0e437098-4400-47e8-915a-193af9053ccc",
+    "name": "getKnowledgeList",
+    "method": "GET",
+    "url": "/knowledge/list/{cno}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "1c8010f5-4358-464d-bbff-e418a93f0365",
+    "name": "updateTest",
+    "method": "PUT",
+    "url": "/test/update",
+    "headers": [
+      {
+        "key": "Content-Type",
+        "value": "application/json",
+        "enabled": true
+      }
+    ],
+    "params": [],
+    "body": {
+      "type": "json",
+      "content": "{\n  \"key\": \"\"\n}"
+    },
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "07ebf0c3-61ad-49fd-af27-1ee1b7f9da41",
+    "name": "deleteKnowledge",
+    "method": "DELETE",
+    "url": "/knowledge/{id}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "1a5db2e8-460a-4cc8-889f-d146d75e2ea4",
+    "name": "upload",
+    "method": "POST",
+    "url": "/file/upload",
+    "headers": [],
+    "params": [],
+    "body": {
+      "type": "form-data",
+      "formData": [
+        {
+          "key": "file",
+          "value": "",
+          "enabled": true,
+          "type": "file"
+        }
+      ]
+    },
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "aa4b83a3-2410-47c4-b9f0-b2d58d29d5f5",
+    "name": "getQuestionList",
+    "method": "GET",
+    "url": "/questionlib/list/{cno}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "0d497c2e-cba7-44dc-97e5-e9cad5a2c79f",
+    "name": "getTestRecord",
+    "method": "GET",
+    "url": "/test/debug/record/{recordId}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "8d90da9b-5385-4773-8ace-f13fdc14461f",
+    "name": "getUserInfo",
+    "method": "GET",
+    "url": "/user/info",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "99b513a5-dae1-4850-8a37-0ad4798b62f7",
+    "name": "获取作业统计",
+    "method": "GET",
+    "url": "/stats/homework/{cno}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "ce450936-a28d-4462-8434-34bdbe4353d2",
+    "name": "myArchivedCourse",
+    "method": "GET",
+    "url": "/course/myArchivedCourse",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "28416830-0c40-4e1f-a64e-329fad41f076",
+    "name": "getCurrentUserName",
+    "method": "GET",
+    "url": "/user-test/current-name",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "83a34d01-5255-4d7e-bb72-cf61d14fbfe8",
+    "name": "addKnowledge",
+    "method": "POST",
+    "url": "/knowledge/add",
+    "headers": [
+      {
+        "key": "Content-Type",
+        "value": "application/json",
+        "enabled": true
+      }
+    ],
+    "params": [],
+    "body": {
+      "type": "json",
+      "content": "{\n  \"cno\": \"\",\n  \"id\": \"\",\n  \"kname\": \"\",\n  \"status\": \"\"\n}"
+    },
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "8cdb4790-2280-4701-899f-0fa858b11e9f",
+    "name": "updateKnowledge",
+    "method": "PUT",
+    "url": "/knowledge/update",
+    "headers": [
+      {
+        "key": "Content-Type",
+        "value": "application/json",
+        "enabled": true
+      }
+    ],
+    "params": [],
+    "body": {
+      "type": "json",
+      "content": "{\n  \"cno\": \"\",\n  \"id\": \"\",\n  \"kname\": \"\",\n  \"status\": \"\"\n}"
+    },
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "18771e4d-288f-4988-8e8e-982513ad045b",
+    "name": "add",
+    "method": "GET",
+    "url": "/discussion/add",
+    "headers": [],
+    "params": [
+      {
+        "key": "id",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "eid",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "userId",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "content",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "pubTime",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "8713f6fd-f2fb-43e0-989a-4665160abf49",
+    "name": "doList",
+    "method": "GET",
+    "url": "/exp/doList",
+    "headers": [],
+    "params": [
+      {
+        "key": "cno",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "ccc77084-bb0d-4140-8cc5-0296983cef1b",
+    "name": "expDetail",
+    "method": "GET",
+    "url": "/exp/expDetail",
+    "headers": [],
+    "params": [
+      {
+        "key": "id",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "f3ee0419-6ef1-4457-aaab-9ddcb04d55fb",
+    "name": "getTestScores",
+    "method": "GET",
+    "url": "/test/scores/{testId}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "c62aeaad-98c7-4ddf-8397-3fe4747d3589",
+    "name": "logout",
+    "method": "GET",
+    "url": "/user/logout",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "eb261fe5-30bd-43e2-8450-e554ebb02cc0",
+    "name": "doAddCourse",
+    "method": "POST",
+    "url": "/course/addCourse",
+    "headers": [],
+    "params": [
+      {
+        "key": "id",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "cname",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "num",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "status",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "tno",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "inviteCode",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "semester",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "tname",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "stuNum",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "6f83408b-3c00-4a32-be47-91fb1785db01",
+    "name": "list",
+    "method": "GET",
+    "url": "/discussion/list",
+    "headers": [],
+    "params": [
+      {
+        "key": "eid",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "9b8b30bf-d62c-458a-8e0e-324299124792",
+    "name": "getKnowledgeList",
+    "method": "GET",
+    "url": "/test/knowledge/{cno}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "3bc5ee7a-2bf6-4c83-9e98-a30e944b6244",
+    "name": "创建签到任务",
+    "method": "POST",
+    "url": "/check/add",
+    "headers": [],
+    "params": [
+      {
+        "key": "courseId",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "7c23efce-efe0-4ca6-816f-0dd45630bf97",
+    "name": "unarchiveCourse",
+    "method": "POST",
+    "url": "/course/unarchiveCourse",
+    "headers": [],
+    "params": [
+      {
+        "key": "id",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "3c75c1ac-5e88-49fd-aa33-07f089eb5c93",
+    "name": "doListMyCourse",
+    "method": "GET",
+    "url": "/course/doListMyCourse",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "8cde9622-ae3c-4763-a777-caa8d2945fce",
+    "name": "doListMyStudents",
+    "method": "GET",
+    "url": "/course/doListMyStudents",
+    "headers": [],
+    "params": [
+      {
+        "key": "cno",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "ce64789f-7fc9-46ba-a7bd-589ae7eabda2",
+    "name": "cloneCourse",
+    "method": "POST",
+    "url": "/course/clone",
+    "headers": [],
+    "params": [
+      {
+        "key": "cno",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "cname",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "semester",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "exp",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "doc",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "exam",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "01a0bbb1-0ebb-40d5-87e3-0e955dc92f20",
+    "name": "doList",
+    "method": "GET",
+    "url": "/doc/list",
+    "headers": [],
+    "params": [
+      {
+        "key": "cno",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "24ea586c-430d-4cf7-801d-5eda84d6c410",
+    "name": "list",
+    "method": "POST",
+    "url": "/knowledge/list",
+    "headers": [],
+    "params": [
+      {
+        "key": "cno",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "8e473692-33d4-465c-9faf-e327cd753a8b",
+    "name": "getSavedAnswers",
+    "method": "GET",
+    "url": "/test/answers/{testRecordId}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "bd6333c1-19dc-4613-8750-c4e161523c08",
+    "name": "删除指定ID的签到任务",
+    "method": "DELETE",
+    "url": "/check/delete/{checkTaskId}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "8f2eee9c-409b-4210-a272-903404d9e541",
+    "name": "多人 签到",
+    "method": "POST",
+    "url": "/check/unCheckInBatch",
+    "headers": [],
+    "params": [
+      {
+        "key": "checkRecordIdList",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "1ab2795c-e4f4-4775-aee3-b8518bac5f64",
+    "name": "updateQuestion",
+    "method": "PUT",
+    "url": "/questionlib/update",
+    "headers": [
+      {
+        "key": "Content-Type",
+        "value": "application/json",
+        "enabled": true
+      }
+    ],
+    "params": [],
+    "body": {
+      "type": "json",
+      "content": "{\n  \"answer\": \"\",\n  \"cno\": \"\",\n  \"cnt\": \"\",\n  \"id\": \"\",\n  \"kno\": \"\",\n  \"option1\": \"\",\n  \"option2\": \"\",\n  \"option3\": \"\",\n  \"option4\": \"\",\n  \"status\": \"\",\n  \"title\": \"\",\n  \"type\": \"\"\n}"
+    },
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "c96a6195-da82-4798-8bb9-9f75cc9b4d0f",
+    "name": "getStaticResource",
+    "method": "GET",
+    "url": "/static/{folder}/{filename:.+}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "9e97e626-e0ad-40f5-99ed-8e4f62d2ee99",
+    "name": "获取仪表板数据",
+    "method": "GET",
+    "url": "/stats/dashboard/{cno}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "879d6863-e870-4554-a110-63a82d96f3e8",
+    "name": "register",
+    "method": "POST",
+    "url": "/user/register",
+    "headers": [],
+    "params": [
+      {
+        "key": "id",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "userName",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "phone",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "myclass",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "loginIp",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "status",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "head",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "role",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "7e987414-64c5-4e09-a832-86374f69d603",
+    "name": "doList2",
+    "method": "GET",
+    "url": "/exp/doList2",
+    "headers": [],
+    "params": [
+      {
+        "key": "cno",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "sno",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "5594bef5-726b-44dd-9efc-6d6b2d7a6074",
+    "name": "fixTestRecordStatus",
+    "method": "POST",
+    "url": "/test/debug/fix-status/{testId}/{sno}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "67eb9ce5-a893-4930-ac13-8c3acfddeedc",
+    "name": "获取指定课程的所有签到任务",
+    "method": "GET",
+    "url": "/check/list/{courseId}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "a067dbde-4001-4c99-94d0-1de5b91faa92",
+    "name": "mark",
+    "method": "POST",
+    "url": "/report/mark",
+    "headers": [],
+    "params": [
+      {
+        "key": "id",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "grade",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "comment",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "97cbf038-5171-4e8e-a2a8-6b6feb1c05ed",
+    "name": "getQuestionsByKnowledge",
+    "method": "GET",
+    "url": "/questionlib/knowledge/{kno}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "aa03f6e3-ffbe-4911-b505-39ec1fe6ec60",
+    "name": "addQuestion",
+    "method": "POST",
+    "url": "/questionlib/add",
+    "headers": [
+      {
+        "key": "Content-Type",
+        "value": "application/json",
+        "enabled": true
+      }
+    ],
+    "params": [],
+    "body": {
+      "type": "json",
+      "content": "{\n  \"answer\": \"\",\n  \"cno\": \"\",\n  \"cnt\": \"\",\n  \"id\": \"\",\n  \"kno\": \"\",\n  \"option1\": \"\",\n  \"option2\": \"\",\n  \"option3\": \"\",\n  \"option4\": \"\",\n  \"status\": \"\",\n  \"title\": \"\",\n  \"type\": \"\"\n}"
+    },
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "35254010-ec47-4f7f-b304-8675ca22b277",
+    "name": "doNewTask",
+    "method": "POST",
+    "url": "/exp/doNewTask",
+    "headers": [],
+    "params": [
+      {
+        "key": "cno",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "id",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "eno",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "cno",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "ename",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "content",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "attachment",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "deadTime",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "delayTime",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "body": {
+      "type": "form-data",
+      "formData": [
+        {
+          "key": "file",
+          "value": "",
+          "enabled": true,
+          "type": "file"
+        }
+      ]
+    },
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "7edb59a1-b9dc-4ded-a1f5-c43b2ea6396a",
+    "name": "startTest",
+    "method": "POST",
+    "url": "/test/start",
+    "headers": [
+      {
+        "key": "Content-Type",
+        "value": "application/json",
+        "enabled": true
+      }
+    ],
+    "params": [],
+    "body": {
+      "type": "json",
+      "content": "{\n  \"key\": \"\"\n}"
+    },
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "4821cc44-2ead-4ebc-a61a-db5442e3f6be",
+    "name": "testInsert",
+    "method": "POST",
+    "url": "/test/debug/test-insert",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "076c51e3-267d-4abc-bc77-8fb8a04f8214",
+    "name": "多人 签到",
+    "method": "POST",
+    "url": "/check/checkInBatch",
+    "headers": [],
+    "params": [
+      {
+        "key": "checkRecordIdList",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "580e063d-efa5-403c-a1fc-086ad931abac",
+    "name": "单人早退",
+    "method": "POST",
+    "url": "/check/leaveEarly",
+    "headers": [],
+    "params": [
+      {
+        "key": "checkRecordId",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "d61cf849-3734-4a3c-9470-33aa6074e0b4",
+    "name": "获取测试统计",
+    "method": "GET",
+    "url": "/stats/test/{cno}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "730838f4-d360-47bf-ac00-bd2480590a83",
+    "name": "单人签到",
+    "method": "POST",
+    "url": "/check/unCheckIn",
+    "headers": [],
+    "params": [
+      {
+        "key": "checkRecordId",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "43b5fb69-857b-4cc4-9884-6026590ef1c0",
+    "name": "单人请假",
+    "method": "POST",
+    "url": "/check/leave",
+    "headers": [],
+    "params": [
+      {
+        "key": "checkRecordId",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "6439dbbc-46b0-472d-843c-bc59b80bd8a0",
+    "name": "getQuestionsByKnowledgeAndCourse",
+    "method": "GET",
+    "url": "/questionlib/knowledge/{cno}/{kno}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "6016e5b8-92e6-480e-b0f2-017bf73a8f0a",
+    "name": "deleteQuestion",
+    "method": "DELETE",
+    "url": "/questionlib/{id}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "f66f44bc-5daf-4833-b8a7-3191ba865a06",
+    "name": "doView",
+    "method": "GET",
+    "url": "/exp/doView",
+    "headers": [],
+    "params": [
+      {
+        "key": "cno",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "eno",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "c18dd810-3d3e-4cff-ab14-12e0ada88928",
+    "name": "getTestDetail",
+    "method": "GET",
+    "url": "/test/detail/{testId}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "e9da96a7-eae7-4d41-98ce-5e605b900d10",
+    "name": "获取签到详细信息",
+    "method": "GET",
+    "url": "/check/get/detail/{checkTaskId}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "e7016ff3-713c-445d-96b4-a273eea1ef5a",
+    "name": "获取学生详细信息",
+    "method": "GET",
+    "url": "/stats/student-detail/{sno}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "7eb035cb-809d-489c-8e1c-eb6eaaa424d0",
+    "name": "listUserFiles",
+    "method": "GET",
+    "url": "/doc/listFiles",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "beb22440-19db-4280-aca4-dce471fb4d3d",
+    "name": "doUpdateExp",
+    "method": "GET",
+    "url": "/exp/doEditExp",
+    "headers": [],
+    "params": [
+      {
+        "key": "id",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "eno",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "cno",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "ename",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "content",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "attachment",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "deadTime",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "delayTime",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "f3d1a034-4a95-4414-941e-821fe0d2fc4f",
+    "name": "getTestList",
+    "method": "GET",
+    "url": "/test/list",
+    "headers": [],
+    "params": [
+      {
+        "key": "cno",
+        "value": "",
+        "enabled": false
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "5d8d5295-58ec-4f19-87f4-7ee24ed2fdb2",
+    "name": "单人签到",
+    "method": "POST",
+    "url": "/check/checkIn",
+    "headers": [],
+    "params": [
+      {
+        "key": "checkRecordId",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "5d94766a-5e96-4bb0-acd4-3855472424d9",
+    "name": "updateStatus",
+    "method": "POST",
+    "url": "/course/updateStatus",
+    "headers": [],
+    "params": [
+      {
+        "key": "cno",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "status",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "f061e205-7525-486f-8e08-a0ceea4a2af3",
+    "name": "doJoinCourse",
+    "method": "GET",
+    "url": "/course/join",
+    "headers": [],
+    "params": [
+      {
+        "key": "inviteCode",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "59b4c084-b520-4da9-934d-c1b7d42edf36",
+    "name": "批量AI分析报告 - 分析指定课程目录下的所有PDF文件",
+    "method": "POST",
+    "url": "/report/batchAnalyze",
+    "headers": [],
+    "params": [
+      {
+        "key": "cno",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "5cbec113-cfb1-442b-8241-9e0628efe6bc",
+    "name": "doNewDoc",
+    "method": "POST",
+    "url": "/doc/add",
+    "headers": [],
+    "params": [
+      {
+        "key": "cno",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "title",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "body": {
+      "type": "form-data",
+      "formData": [
+        {
+          "key": "file",
+          "value": "",
+          "enabled": true,
+          "type": "file"
+        }
+      ]
+    },
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "b72ca92d-d76d-468a-95f2-e3e82bf207ce",
+    "name": "getCurrentUser",
+    "method": "GET",
+    "url": "/user-test/current",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "59c1933c-01a3-40f2-b00c-87474dd09b3b",
+    "name": "doDelExp",
+    "method": "GET",
+    "url": "/exp/doDelExp",
+    "headers": [],
+    "params": [
+      {
+        "key": "id",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "cno",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "5636a46a-74dc-4ff6-96cb-0da32688bc51",
+    "name": "更新签到任务",
+    "method": "POST",
+    "url": "/check/update",
+    "headers": [],
+    "params": [
+      {
+        "key": "id",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "courseId",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "status",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "checkTime",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "2f68946d-f623-47c2-86aa-f07e61db02e5",
+    "name": "获取学生统计信息",
+    "method": "GET",
+    "url": "/stats/students/{cno}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "239048a6-ba04-4b84-b9bd-18ea186f1413",
+    "name": "upload",
+    "method": "POST",
+    "url": "/file/upload",
+    "headers": [],
+    "params": [],
+    "body": {
+      "type": "form-data",
+      "formData": [
+        {
+          "key": "file",
+          "value": "",
+          "enabled": true,
+          "type": "file"
+        }
+      ]
+    },
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "c2421eb6-e3ba-4a88-b9d2-9baec0e1f782",
+    "name": "getStaticResource",
+    "method": "GET",
+    "url": "/static/{folder}/{filename:.+}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "134c3520-4638-4aa0-995d-75dbb886bfb3",
+    "name": "doDelayTime",
+    "method": "GET",
+    "url": "/exp/doDelayTime",
+    "headers": [],
+    "params": [
+      {
+        "key": "id",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "delayTime",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "a5796443-7f8c-4127-a788-6ca25ebcdb66",
+    "name": "getKnowledgeList",
+    "method": "GET",
+    "url": "/knowledge/list/{cno}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "91fdbe6a-1dc6-4967-8df7-fed8f59c954e",
+    "name": "deleteQuestion",
+    "method": "DELETE",
+    "url": "/questionlib/{id}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "7386fff3-7d0d-4001-84a0-7e3768144ffa",
+    "name": "submitTest",
+    "method": "POST",
+    "url": "/test/submit",
+    "headers": [
+      {
+        "key": "Content-Type",
+        "value": "application/json",
+        "enabled": true
+      }
+    ],
+    "params": [],
+    "body": {
+      "type": "json",
+      "content": "{\n  \"key\": \"\"\n}"
+    },
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "74973928-c2b2-4c99-ac60-5baeb0eef20b",
+    "name": "doDel",
+    "method": "GET",
+    "url": "/doc/doDel",
+    "headers": [],
+    "params": [
+      {
+        "key": "id",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "cno",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "e63c3eda-8dec-4a05-844c-b3511da4640c",
+    "name": "download",
+    "method": "GET",
+    "url": "/doc/download",
+    "headers": [],
+    "params": [
+      {
+        "key": "id",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "cno",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "0f056f37-f12d-42fc-98f2-db039cd9f7d5",
+    "name": "getCurrentUserId",
+    "method": "GET",
+    "url": "/user-test/current-id",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "0dcdf1bd-1b9b-494b-9c55-8e88dc952ae6",
+    "name": "doView",
+    "method": "GET",
+    "url": "/exp/doView",
+    "headers": [],
+    "params": [
+      {
+        "key": "cno",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "eno",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "cf978f95-8e4a-4b12-aff6-e8e81a2ef4f9",
+    "name": "deleteTest",
+    "method": "DELETE",
+    "url": "/test/{id}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "1ef474d1-bd53-42df-9739-5bd036e4c44f",
+    "name": "getAllStudentRecords",
+    "method": "GET",
+    "url": "/test/all-records/{testId}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "1cbd782a-5b3c-4ede-b76f-72293581f397",
+    "name": "获取指定课程的所有签到任务",
+    "method": "GET",
+    "url": "/check/list/{courseId}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "53adeaa1-0d1c-4a06-bf51-b49f9c902505",
+    "name": "获取签到详细信息",
+    "method": "GET",
+    "url": "/check/get/detail/{checkTaskId}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "30804f8e-b063-4a56-8cfd-f83b002ecff9",
+    "name": "多人请假",
+    "method": "POST",
+    "url": "/check/leaveBatch",
+    "headers": [],
+    "params": [
+      {
+        "key": "checkRecordIdList",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "c2ef0ddc-f172-4334-92f9-686f3b9bac36",
+    "name": "myArchivedCourse",
+    "method": "GET",
+    "url": "/course/myArchivedCourse",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "f79e0671-50fb-426e-a7bf-c67e3fb17490",
+    "name": "updateStatus",
+    "method": "POST",
+    "url": "/course/updateStatus",
+    "headers": [],
+    "params": [
+      {
+        "key": "cno",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "status",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "669b2b10-46a1-4286-9b0b-a8ab7249855a",
+    "name": "doDelExp",
+    "method": "GET",
+    "url": "/exp/doDelExp",
+    "headers": [],
+    "params": [
+      {
+        "key": "id",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "cno",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "117bcf32-fc61-4cc7-aa1d-4c1678c2caa8",
+    "name": "getSavedAnswers",
+    "method": "GET",
+    "url": "/test/answers/{testRecordId}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "74c15fc0-b130-4200-b893-c412f623b076",
+    "name": "获取指定ID的签到任务",
+    "method": "GET",
+    "url": "/check/get/{checkTaskId}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "301aa611-d1f8-471f-8a36-36feb240877b",
+    "name": "多人 签到",
+    "method": "POST",
+    "url": "/check/unCheckInBatch",
+    "headers": [],
+    "params": [
+      {
+        "key": "checkRecordIdList",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "87282352-ef89-490f-957d-95640a197620",
+    "name": "单人签到",
+    "method": "POST",
+    "url": "/check/checkIn",
+    "headers": [],
+    "params": [
+      {
+        "key": "checkRecordId",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "083171f9-a92e-4984-a14b-e60ab998386f",
+    "name": "mark",
+    "method": "POST",
+    "url": "/report/mark",
+    "headers": [],
+    "params": [
+      {
+        "key": "id",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "grade",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "comment",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "adf19f07-741a-4493-8685-c488eda0e0bd",
+    "name": "doList",
+    "method": "GET",
+    "url": "/doc/list",
+    "headers": [],
+    "params": [
+      {
+        "key": "cno",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "0581a087-c4c6-453e-9293-da55d19bcc70",
+    "name": "getCurrentUser",
+    "method": "GET",
+    "url": "/user-test/current",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "aee289af-0482-407e-90cf-e1216ba64389",
+    "name": "doNewTask",
+    "method": "POST",
+    "url": "/exp/doNewTask",
+    "headers": [],
+    "params": [
+      {
+        "key": "cno",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "id",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "eno",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "cno",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "ename",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "content",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "attachment",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "deadTime",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "delayTime",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "body": {
+      "type": "form-data",
+      "formData": [
+        {
+          "key": "file",
+          "value": "",
+          "enabled": true,
+          "type": "file"
+        }
+      ]
+    },
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "81e6fc52-0da0-46d7-86aa-10aba26730de",
+    "name": "expDetail",
+    "method": "GET",
+    "url": "/exp/expDetail",
+    "headers": [],
+    "params": [
+      {
+        "key": "id",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "cd3bcaea-b593-44d0-b6a3-ed93d6589d10",
+    "name": "getTestDetail",
+    "method": "GET",
+    "url": "/test/detail/{testId}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "876aaf54-fef2-45f4-ab9c-7f3d0624d2d2",
+    "name": "单人迟到",
+    "method": "POST",
+    "url": "/check/late",
+    "headers": [],
+    "params": [
+      {
+        "key": "checkRecordId",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "06f4a0d7-1f98-4cbf-8ffd-1613f0197a63",
+    "name": "获取学生详细信息",
+    "method": "GET",
+    "url": "/stats/student-detail/{sno}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "30e13e22-6ee6-4740-a39b-eaf634aa7df6",
+    "name": "doListMyCourse",
+    "method": "GET",
+    "url": "/course/doListMyCourse",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "4bfe80f6-1df0-484e-a002-47e2bfdd0d4d",
+    "name": "updateKnowledge",
+    "method": "PUT",
+    "url": "/knowledge/update",
+    "headers": [
+      {
+        "key": "Content-Type",
+        "value": "application/json",
+        "enabled": true
+      }
+    ],
+    "params": [],
+    "body": {
+      "type": "json",
+      "content": "{\n  \"cno\": \"\",\n  \"id\": \"\",\n  \"kname\": \"\",\n  \"status\": \"\"\n}"
+    },
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "7a033453-b1ce-492f-b04c-574b07f8f39a",
+    "name": "list",
+    "method": "GET",
+    "url": "/discussion/list",
+    "headers": [],
+    "params": [
+      {
+        "key": "eid",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "78ccafd2-5ed1-4d62-aebe-3a199de7224a",
+    "name": "getTestScores",
+    "method": "GET",
+    "url": "/test/scores/{testId}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "2b551409-f6f5-4ea7-b066-b43fac6cd0f8",
+    "name": "getTestQuestions",
+    "method": "GET",
+    "url": "/test/debug/questions/{testId}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "131e6060-9651-4e2c-ab06-e88b6d3f2ad9",
+    "name": "多人 签到",
+    "method": "POST",
+    "url": "/check/checkInBatch",
+    "headers": [],
+    "params": [
+      {
+        "key": "checkRecordIdList",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "30a51aad-bc82-4c98-9bf0-c6c3a1529d41",
+    "name": "deleteKnowledge",
+    "method": "DELETE",
+    "url": "/knowledge/{id}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "7cecf4b3-6e32-40f7-b6c8-16748b4617e2",
+    "name": "getQuestionsByKnowledge",
+    "method": "GET",
+    "url": "/questionlib/knowledge/{kno}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "4f229178-8a69-42c0-ba04-47a669a3325e",
+    "name": "getTestRecord",
+    "method": "GET",
+    "url": "/test/debug/record/{recordId}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "746db48c-5276-4dee-bff1-9b63b687945d",
+    "name": "获取仪表板数据",
+    "method": "GET",
+    "url": "/stats/dashboard/{cno}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "4db4a844-5b9d-4f55-8b18-22605d0311bc",
+    "name": "获取测试统计",
+    "method": "GET",
+    "url": "/stats/test/{cno}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "0bc3f71d-13da-4804-bb36-a00920e87e68",
+    "name": "unarchiveCourse",
+    "method": "POST",
+    "url": "/course/unarchiveCourse",
+    "headers": [],
+    "params": [
+      {
+        "key": "id",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "ce97b4c8-177b-40d6-a385-249e32f63390",
+    "name": "getQuestionList",
+    "method": "GET",
+    "url": "/questionlib/list/{cno}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "8c5f7209-f20d-40a2-bd5a-9c3a9b787214",
+    "name": "单人请假",
+    "method": "POST",
+    "url": "/check/leave",
+    "headers": [],
+    "params": [
+      {
+        "key": "checkRecordId",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "4026b2ac-f0aa-4564-a3e3-e7307506830c",
+    "name": "doDelCourse",
+    "method": "POST",
+    "url": "/course/doDelCourse",
+    "headers": [],
+    "params": [
+      {
+        "key": "id",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "45b8b545-c25d-4a63-ab4b-780d9f88b72a",
+    "name": "doJoinCourse",
+    "method": "GET",
+    "url": "/course/join",
+    "headers": [],
+    "params": [
+      {
+        "key": "inviteCode",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "0e82440c-5042-46be-aaad-6370d0d346e7",
+    "name": "API接口 - 分析报告",
+    "method": "POST",
+    "url": "/report/analyze",
+    "headers": [],
+    "params": [
+      {
+        "key": "cno",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "reportName",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "5d4646e0-b77a-4bde-97e9-6bb9acd9abc9",
+    "name": "listUserFiles",
+    "method": "GET",
+    "url": "/doc/listFiles",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "d8c5a633-096e-4cc9-8fb9-a24ae2286b96",
+    "name": "isLoggedIn",
+    "method": "GET",
+    "url": "/user-test/is-logged-in",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "b4d034bd-a840-4f95-bb9f-fa5ed8a89334",
+    "name": "testInsert",
+    "method": "POST",
+    "url": "/test/debug/test-insert",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "1146af5f-59c6-42c7-a797-8c08ecc26f93",
+    "name": "fixTestRecordStatus",
+    "method": "POST",
+    "url": "/test/debug/fix-status/{testId}/{sno}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "5d210426-2036-4616-a5bc-54bc16c4909c",
+    "name": "createTest",
+    "method": "POST",
+    "url": "/test/create",
+    "headers": [
+      {
+        "key": "Content-Type",
+        "value": "application/json",
+        "enabled": true
+      }
+    ],
+    "params": [],
+    "body": {
+      "type": "json",
+      "content": "{\n  \"key\": \"\"\n}"
+    },
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "cf33399c-1e4e-4b9b-bcb9-f98359b14ed8",
+    "name": "getStudentTestRecords",
+    "method": "GET",
+    "url": "/test/student/records",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "fca11e26-3972-46bc-9777-2b1f2738563a",
+    "name": "获取考勤统计",
+    "method": "GET",
+    "url": "/stats/attendance/{cno}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "022baaa1-decf-4ca7-827a-afe8d937fe94",
+    "name": "doAddCourse",
+    "method": "POST",
+    "url": "/course/addCourse",
+    "headers": [],
+    "params": [
+      {
+        "key": "id",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "cname",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "num",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "status",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "tno",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "inviteCode",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "semester",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "tname",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "stuNum",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "8e0a4b1b-4167-4eb6-8954-f9c0e805dff4",
+    "name": "getMark",
+    "method": "GET",
+    "url": "/report/getMark",
+    "headers": [],
+    "params": [
+      {
+        "key": "id",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "ffe68c0e-ff77-4d17-8254-abae209e941d",
+    "name": "updateQuestion",
+    "method": "PUT",
+    "url": "/questionlib/update",
+    "headers": [
+      {
+        "key": "Content-Type",
+        "value": "application/json",
+        "enabled": true
+      }
+    ],
+    "params": [],
+    "body": {
+      "type": "json",
+      "content": "{\n  \"answer\": \"\",\n  \"cno\": \"\",\n  \"cnt\": \"\",\n  \"id\": \"\",\n  \"kno\": \"\",\n  \"option1\": \"\",\n  \"option2\": \"\",\n  \"option3\": \"\",\n  \"option4\": \"\",\n  \"status\": \"\",\n  \"title\": \"\",\n  \"type\": \"\"\n}"
+    },
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "6d5f3d3c-6ed2-4ccf-bdd9-efcbd13d136c",
+    "name": "doList",
+    "method": "GET",
+    "url": "/exp/doList",
+    "headers": [],
+    "params": [
+      {
+        "key": "cno",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "e1d0f2d6-e636-49a0-832a-3dda8ce95464",
+    "name": "saveAnswer",
+    "method": "POST",
+    "url": "/test/save-answer",
+    "headers": [
+      {
+        "key": "Content-Type",
+        "value": "application/json",
+        "enabled": true
+      }
+    ],
+    "params": [],
+    "body": {
+      "type": "json",
+      "content": "{\n  \"key\": \"\"\n}"
+    },
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "9d4113ae-d7f1-4abe-9d3c-dd343db7fde0",
+    "name": "login",
+    "method": "POST",
+    "url": "/user/login",
+    "headers": [],
+    "params": [
+      {
+        "key": "phone",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "password",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "75e3d9c7-3281-4d8a-92d8-fc307436cd29",
+    "name": "update",
+    "method": "POST",
+    "url": "/user/update",
+    "headers": [],
+    "params": [
+      {
+        "key": "id",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "userName",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "phone",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "myclass",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "loginIp",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "status",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "head",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "role",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "78380172-7e58-4e2d-9887-7931881de0b0",
+    "name": "获取作业统计",
+    "method": "GET",
+    "url": "/stats/homework/{cno}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "77bc7e1e-a884-4cd5-b440-94122c812ddd",
+    "name": "doListMyStudents",
+    "method": "GET",
+    "url": "/course/doListMyStudents",
+    "headers": [],
+    "params": [
+      {
+        "key": "cno",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "2160d6a0-d460-4756-90e1-cfcc1c2e0413",
+    "name": "getCurrentUserName",
+    "method": "GET",
+    "url": "/user-test/current-name",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "d40102a6-161c-4f42-a417-24c2c1652b4c",
+    "name": "getQuestionsByKnowledgeAndCourse",
+    "method": "GET",
+    "url": "/questionlib/knowledge/{cno}/{kno}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "303da65e-9e82-4c55-9f65-f551e9de3641",
+    "name": "创建签到任务",
+    "method": "POST",
+    "url": "/check/add",
+    "headers": [],
+    "params": [
+      {
+        "key": "courseId",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "5e65e825-22ec-42df-99a8-c09ed7470b9d",
+    "name": "单人签到",
+    "method": "POST",
+    "url": "/check/unCheckIn",
+    "headers": [],
+    "params": [
+      {
+        "key": "checkRecordId",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "785233ad-b258-4c65-ad6b-83ffccad57a8",
+    "name": "单人早退",
+    "method": "POST",
+    "url": "/check/leaveEarly",
+    "headers": [],
+    "params": [
+      {
+        "key": "checkRecordId",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "dce5a054-3503-47a8-a06e-76ba48b775f3",
+    "name": "doNewDoc",
+    "method": "POST",
+    "url": "/doc/add",
+    "headers": [],
+    "params": [
+      {
+        "key": "cno",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "title",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "body": {
+      "type": "form-data",
+      "formData": [
+        {
+          "key": "file",
+          "value": "",
+          "enabled": true,
+          "type": "file"
+        }
+      ]
+    },
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "0471f1ee-0a40-4592-973a-124b41aca388",
+    "name": "updateTest",
+    "method": "PUT",
+    "url": "/test/update",
+    "headers": [
+      {
+        "key": "Content-Type",
+        "value": "application/json",
+        "enabled": true
+      }
+    ],
+    "params": [],
+    "body": {
+      "type": "json",
+      "content": "{\n  \"key\": \"\"\n}"
+    },
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "842dc9a4-006a-4ae3-83a5-2d57bc2ecafc",
+    "name": "startTest",
+    "method": "POST",
+    "url": "/test/start",
+    "headers": [
+      {
+        "key": "Content-Type",
+        "value": "application/json",
+        "enabled": true
+      }
+    ],
+    "params": [],
+    "body": {
+      "type": "json",
+      "content": "{\n  \"key\": \"\"\n}"
+    },
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "bf105be8-c66c-4d4e-b89a-99e1cee9af83",
+    "name": "getUserInfo",
+    "method": "GET",
+    "url": "/user/info",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "ff6ef80f-010d-41db-ac8d-982a20af0b4d",
+    "name": "cloneCourse",
+    "method": "POST",
+    "url": "/course/clone",
+    "headers": [],
+    "params": [
+      {
+        "key": "cno",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "cname",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "semester",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "exp",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "doc",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "exam",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "b9e080fa-8583-4cf4-81ec-a6da7df62e5e",
+    "name": "submit",
+    "method": "POST",
+    "url": "/report/submit",
+    "headers": [],
+    "params": [
+      {
+        "key": "eno",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "cno",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "body": {
+      "type": "form-data",
+      "formData": [
+        {
+          "key": "file",
+          "value": "",
+          "enabled": true,
+          "type": "file"
+        }
+      ]
+    },
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "21cf8414-7344-47e6-95dc-0fa896d96a95",
+    "name": "批量AI分析报告 - 分析指定课程目录下的所有PDF文件",
+    "method": "POST",
+    "url": "/report/batchAnalyze",
+    "headers": [],
+    "params": [
+      {
+        "key": "cno",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "a4fa4ae9-11d6-412e-b3d4-63944a9e228d",
+    "name": "addKnowledge",
+    "method": "POST",
+    "url": "/knowledge/add",
+    "headers": [
+      {
+        "key": "Content-Type",
+        "value": "application/json",
+        "enabled": true
+      }
+    ],
+    "params": [],
+    "body": {
+      "type": "json",
+      "content": "{\n  \"cno\": \"\",\n  \"id\": \"\",\n  \"kname\": \"\",\n  \"status\": \"\"\n}"
+    },
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "7af4c6db-75e4-4f5c-8fbd-b5e5356b357c",
+    "name": "getKnowledgeList",
+    "method": "GET",
+    "url": "/test/knowledge/{cno}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "cc9ce18f-2d5b-4c17-aeca-7b823b10fca7",
+    "name": "更新签到任务",
+    "method": "POST",
+    "url": "/check/update",
+    "headers": [],
+    "params": [
+      {
+        "key": "id",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "courseId",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "status",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "checkTime",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "c82b1f19-6415-47f6-a349-b8cd7cdcd5a4",
+    "name": "删除指定ID的签到任务",
+    "method": "DELETE",
+    "url": "/check/delete/{checkTaskId}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "0602f2e6-4751-4cce-bab6-ebb1cd656a0b",
+    "name": "doUpdateCourse",
+    "method": "POST",
+    "url": "/course/updateCourse",
+    "headers": [],
+    "params": [
+      {
+        "key": "id",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "cname",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "num",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "status",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "tno",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "inviteCode",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "semester",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "tname",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "stuNum",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "9ba8464f-2cc1-4001-af2a-d38a2f33622e",
+    "name": "list",
+    "method": "POST",
+    "url": "/knowledge/list",
+    "headers": [],
+    "params": [
+      {
+        "key": "cno",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "f2195016-cc63-44cd-a4da-31ea84e3e5a3",
+    "name": "add",
+    "method": "GET",
+    "url": "/discussion/add",
+    "headers": [],
+    "params": [
+      {
+        "key": "id",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "eid",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "userId",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "content",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "pubTime",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "6b6bd1fc-dcf3-46a8-8ef6-ac497af505a0",
+    "name": "getTestList",
+    "method": "GET",
+    "url": "/test/list",
+    "headers": [],
+    "params": [
+      {
+        "key": "cno",
+        "value": "",
+        "enabled": false
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "f03a1463-97d4-4f17-b300-cc2d27d4bda8",
+    "name": "doMyCourse",
+    "method": "GET",
+    "url": "/course/myCourse",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "12d05a85-9498-4afb-9e4d-ed678f71f095",
+    "name": "获取报告文件路径（添加时间戳避免缓存）",
+    "method": "GET",
+    "url": "/report/getReportPath",
+    "headers": [],
+    "params": [
+      {
+        "key": "cno",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "reportName",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "2fae6a04-30b3-43e5-b170-3c8945467270",
+    "name": "addQuestion",
+    "method": "POST",
+    "url": "/questionlib/add",
+    "headers": [
+      {
+        "key": "Content-Type",
+        "value": "application/json",
+        "enabled": true
+      }
+    ],
+    "params": [],
+    "body": {
+      "type": "json",
+      "content": "{\n  \"answer\": \"\",\n  \"cno\": \"\",\n  \"cnt\": \"\",\n  \"id\": \"\",\n  \"kno\": \"\",\n  \"option1\": \"\",\n  \"option2\": \"\",\n  \"option3\": \"\",\n  \"option4\": \"\",\n  \"status\": \"\",\n  \"title\": \"\",\n  \"type\": \"\"\n}"
+    },
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "0677439b-412b-49e8-bd21-d91677b0971c",
+    "name": "getAllQuestionsByCourse",
+    "method": "GET",
+    "url": "/questionlib/debug/all/{cno}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "c863005e-9d8c-4387-a1c9-3211a1f78ca0",
+    "name": "doList2",
+    "method": "GET",
+    "url": "/exp/doList2",
+    "headers": [],
+    "params": [
+      {
+        "key": "cno",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "sno",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "6c6dcb3a-4387-42e7-9730-8ea6ac66fca4",
+    "name": "doUpdateExp",
+    "method": "GET",
+    "url": "/exp/doEditExp",
+    "headers": [],
+    "params": [
+      {
+        "key": "id",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "eno",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "cno",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "ename",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "content",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "attachment",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "deadTime",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "delayTime",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "619cfe6b-0733-4393-81e6-9cef9ecba17f",
+    "name": "register",
+    "method": "POST",
+    "url": "/user/register",
+    "headers": [],
+    "params": [
+      {
+        "key": "id",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "userName",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "phone",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "myclass",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "loginIp",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "status",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "head",
+        "value": "",
+        "enabled": true
+      },
+      {
+        "key": "role",
+        "value": "",
+        "enabled": true
+      }
+    ],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "03a24a34-6a43-4714-88c5-7930fcce8754",
+    "name": "logout",
+    "method": "GET",
+    "url": "/user/logout",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "ca596860-48ad-436f-8815-71913dd69434",
+    "name": "获取学生统计信息",
+    "method": "GET",
+    "url": "/stats/students/{cno}",
+    "headers": [],
+    "params": [],
+    "projectId": "proj-1768533723809"
+  },
+  {
+    "id": "req-1768536575743",
+    "name": "doListMyStudents",
+    "method": "POST",
+    "url": "https://app.warp.dev/graphql/v2?op=CreateAnonymousUser",
+    "headers": [
+      {
+        "key": "User-Agent",
+        "value": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36",
+        "enabled": true
+      }
+    ],
+    "params": [
+      {
+        "key": "cno",
+        "value": "2",
+        "enabled": false
+      }
+    ],
+    "body": {
+      "type": "json",
+      "content": "{\n  \"operationName\": \"CreateAnonymousUser\",\n  \"variables\": {\n    \"input\": {\n      \"anonymousUserType\": \"WEB_CLIENT_ANONYMOUS_USER\",\n      \"expirationType\": \"NO_EXPIRATION\"\n    },\n    \"requestContext\": {\"osContext\": {}, \"clientContext\": {}}\n  },\n  \"query\": \"mutation CreateAnonymousUser($input: CreateAnonymousUserInput!, $requestContext: RequestContext!) { __typename createAnonymousUser(input: $input, requestContext: $requestContext) { ... on CreateAnonymousUserOutput { idToken } } }\"\n}"
+    },
+    "projectId": "proj-1768533723809"
+  }
+]

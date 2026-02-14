@@ -140,13 +140,13 @@ func ConvertOpenAPIToRequests(spec *OpenAPISpec, projectId string, baseURL strin
 					req.Params = append(req.Params, KeyValue{
 						Key:     param.Name,
 						Value:   "",
-						Enabled: !param.Required,
+						Enabled: true,
 					})
 				} else if param.In == "header" {
 					req.Headers = append(req.Headers, KeyValue{
 						Key:     param.Name,
 						Value:   "",
-						Enabled: !param.Required,
+						Enabled: true,
 					})
 				}
 			}
