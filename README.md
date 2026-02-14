@@ -8,6 +8,8 @@
 ![React](https://img.shields.io/badge/React-18-61DAFB?logo=react)
 
 ![screenshot](https://raw.githubusercontent.com/space08/Postgo/main/screenshot/01.png)
+
+![screenshot](https://raw.githubusercontent.com/space08/Postgo/main/screenshot/02.png)
 ## ✨ 功能特性
 
 ### 核心功能
