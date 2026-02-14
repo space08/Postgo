@@ -489,6 +489,37 @@ function App() {
 
 
   const handleSelectHistory = (request: HttpRequest) => {
+    // Extract the original URL (without baseUrl) for comparison
+    const getOriginalUrl = (req: HttpRequest) => {
+      if (!req.projectId) return req.url;
+      
+      const project = projects.find(p => p.id === req.projectId);
+      if (!project || !project.baseUrl) return req.url;
+      
+      const baseUrl = project.baseUrl.replace(/\/$/, '');
+      if (req.url.startsWith(baseUrl)) {
+        return req.url.substring(baseUrl.length);
+      }
+      return req.url;
+    };
+    
+    const requestOriginalUrl = getOriginalUrl(request);
+    
+    // Check if a tab already exists for this request
+    const existingTab = tabs.find(tab => {
+      const tabOriginalUrl = getOriginalUrl(tab.request);
+      return tabOriginalUrl === requestOriginalUrl && 
+             tab.request.method === request.method &&
+             (tab.request.projectId || '') === (request.projectId || '');
+    });
+    
+    if (existingTab) {
+      // Switch to existing tab
+      setActiveTabId(existingTab.id);
+      setShowHistory(false);
+      return;
+    }
+    
     const newRequest = new main.HttpRequest(request);
     newRequest.id = `req-${Date.now()}`;
     
