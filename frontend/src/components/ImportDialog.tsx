@@ -15,6 +15,7 @@ export default function ImportDialog({ projects, onImport, onClose, preselectedP
   const [projectId, setProjectId] = useState(preselectedProjectId);
   const [baseURL, setBaseURL] = useState('');
   const [fileName, setFileName] = useState('');
+  const [isDragging, setIsDragging] = useState(false);
 
   // Update Base URL when project selection changes
   useEffect(() => {
@@ -32,10 +33,7 @@ export default function ImportDialog({ projects, onImport, onClose, preselectedP
     }
   }, [projectId, projects]);
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
+  const processFile = (file: File) => {
     setFileName(file.name);
 
     const ext = file.name.split('.').pop()?.toLowerCase();
@@ -53,6 +51,46 @@ export default function ImportDialog({ projects, onImport, onClose, preselectedP
     reader.readAsText(file);
   };
 
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    processFile(file);
+  };
+
+  const handleDragEnter = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      const ext = file.name.split('.').pop()?.toLowerCase();
+      if (ext === 'json' || ext === 'yml' || ext === 'yaml') {
+        processFile(file);
+      } else {
+        alert('请选择有效的文件格式 (.json, .yml, .yaml)');
+      }
+    }
+  };
+
   const handleImport = () => {
     if (!fileContent) {
       alert('Please select a file first');
@@ -62,8 +100,18 @@ export default function ImportDialog({ projects, onImport, onClose, preselectedP
     onImport(fileContent, format, projectId, baseURL);
   };
 
+  const preventDefaultDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      onDragEnter={preventDefaultDrag}
+      onDragOver={preventDefaultDrag}
+      onDrop={preventDefaultDrag}
+    >
       <div className="bg-gray-800 rounded-lg p-6 w-[600px]">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-white flex items-center gap-2">
@@ -85,7 +133,17 @@ export default function ImportDialog({ projects, onImport, onClose, preselectedP
             </label>
             <div className="flex items-center gap-3">
               <label className="flex-1 cursor-pointer">
-                <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 hover:border-blue-500 transition-colors">
+                <div 
+                  className={`border-2 border-dashed rounded-lg p-6 transition-colors ${
+                    isDragging 
+                      ? 'border-blue-500 bg-blue-500 bg-opacity-10' 
+                      : 'border-gray-600 hover:border-blue-500'
+                  }`}
+                  onDragEnter={handleDragEnter}
+                  onDragLeave={handleDragLeave}
+                  onDragOver={handleDragOver}
+                  onDrop={handleDrop}
+                >
                   <div className="flex flex-col items-center gap-2">
                     {fileName ? (
                       <>
@@ -101,8 +159,8 @@ export default function ImportDialog({ projects, onImport, onClose, preselectedP
                       </>
                     ) : (
                       <>
-                        <Upload size={32} className="text-gray-500" />
-                        <p className="text-gray-400 text-sm">
+                        <Upload size={32} className={isDragging ? "text-blue-500" : "text-gray-500"} />
+                        <p className={`text-sm ${isDragging ? "text-blue-400" : "text-gray-400"}`}>
                           点击选择文件或拖拽到此处
                         </p>
                         <p className="text-gray-500 text-xs">

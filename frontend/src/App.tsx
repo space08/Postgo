@@ -120,6 +120,20 @@ function App() {
   }, [activeTabId, tabs]);
 
   useEffect(() => {
+    const preventDefaultDrag = (e: DragEvent) => {
+      e.preventDefault();
+    };
+
+    document.addEventListener('dragover', preventDefaultDrag);
+    document.addEventListener('drop', preventDefaultDrag);
+    
+    return () => {
+      document.removeEventListener('dragover', preventDefaultDrag);
+      document.removeEventListener('drop', preventDefaultDrag);
+    };
+  }, []);
+
+  useEffect(() => {
     if (tabs.length === 0) return;
     
     const saveTabsAsync = async () => {

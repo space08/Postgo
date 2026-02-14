@@ -6,14 +6,16 @@ import (
 	"io"
 	"strings"
 
+	"github.com/google/uuid"
 	"gopkg.in/yaml.v3"
 )
 
 type OpenAPISpec struct {
-	OpenAPI string                `json:"openapi" yaml:"openapi"`
-	Info    OpenAPIInfo           `json:"info" yaml:"info"`
-	Paths   map[string]PathItem   `json:"paths" yaml:"paths"`
-	Servers []OpenAPIServer       `json:"servers,omitempty" yaml:"servers,omitempty"`
+	OpenAPI   string                `json:"openapi" yaml:"openapi"`
+	Info      OpenAPIInfo           `json:"info" yaml:"info"`
+	Paths     map[string]PathItem   `json:"paths" yaml:"paths"`
+	Servers   []OpenAPIServer       `json:"servers,omitempty" yaml:"servers,omitempty"`
+	PathOrder []string              `json:"-" yaml:"-"`
 }
 
 type OpenAPIInfo struct {
@@ -83,15 +85,81 @@ func ParseOpenAPI(data []byte, format string) (*OpenAPISpec, error) {
 		if err := json.Unmarshal(data, &spec); err != nil {
 			return nil, fmt.Errorf("failed to parse JSON: %w", err)
 		}
+		spec.PathOrder = extractPathOrderFromJSON(data)
 	case "yaml", "yml":
 		if err := yaml.Unmarshal(data, &spec); err != nil {
 			return nil, fmt.Errorf("failed to parse YAML: %w", err)
 		}
+		spec.PathOrder = extractPathOrderFromYAML(data)
 	default:
 		return nil, fmt.Errorf("unsupported format: %s", format)
 	}
 
 	return &spec, nil
+}
+
+func extractPathOrderFromYAML(data []byte) []string {
+	var node yaml.Node
+	if err := yaml.Unmarshal(data, &node); err != nil {
+		return nil
+	}
+
+	var pathOrder []string
+	if node.Kind == yaml.DocumentNode && len(node.Content) > 0 {
+		root := node.Content[0]
+		if root.Kind == yaml.MappingNode {
+			for i := 0; i < len(root.Content); i += 2 {
+				key := root.Content[i]
+				value := root.Content[i+1]
+				if key.Value == "paths" && value.Kind == yaml.MappingNode {
+					for j := 0; j < len(value.Content); j += 2 {
+						pathKey := value.Content[j]
+						pathOrder = append(pathOrder, pathKey.Value)
+					}
+					break
+				}
+			}
+		}
+	}
+	return pathOrder
+}
+
+func extractPathOrderFromJSON(data []byte) []string {
+	var raw map[string]json.RawMessage
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return nil
+	}
+
+	pathsRaw, ok := raw["paths"]
+	if !ok {
+		return nil
+	}
+
+	var pathsMap map[string]json.RawMessage
+	if err := json.Unmarshal(pathsRaw, &pathsMap); err != nil {
+		return nil
+	}
+
+	decoder := json.NewDecoder(strings.NewReader(string(pathsRaw)))
+	token, err := decoder.Token()
+	if err != nil || token != json.Delim('{') {
+		return nil
+	}
+
+	var pathOrder []string
+	for decoder.More() {
+		token, err := decoder.Token()
+		if err != nil {
+			break
+		}
+		if key, ok := token.(string); ok {
+			pathOrder = append(pathOrder, key)
+			var value json.RawMessage
+			decoder.Decode(&value)
+		}
+	}
+
+	return pathOrder
 }
 
 func ConvertOpenAPIToRequests(spec *OpenAPISpec, projectId string, baseURL string) []HttpRequest {
@@ -101,25 +169,44 @@ func ConvertOpenAPIToRequests(spec *OpenAPISpec, projectId string, baseURL strin
 	// The path will be stored as relative (e.g. "/users") and the frontend/runtime 
 	// will prepend the project's Base URL when executing or viewing the request.
 
-	for path, pathItem := range spec.Paths {
+	// Use PathOrder if available, otherwise fall back to map iteration
+	pathsToProcess := spec.PathOrder
+	if len(pathsToProcess) == 0 {
+		pathsToProcess = make([]string, 0, len(spec.Paths))
+		for path := range spec.Paths {
+			pathsToProcess = append(pathsToProcess, path)
+		}
+	}
 
-		operations := map[string]*Operation{
-			"GET":     pathItem.Get,
-			"POST":    pathItem.Post,
-			"PUT":     pathItem.Put,
-			"DELETE":  pathItem.Delete,
-			"PATCH":   pathItem.Patch,
-			"HEAD":    pathItem.Head,
-			"OPTIONS": pathItem.Options,
+	for _, path := range pathsToProcess {
+		pathItem, exists := spec.Paths[path]
+		if !exists {
+			continue
 		}
 
-		for method, operation := range operations {
+		// Process methods in a defined order
+		methodOrder := []struct {
+			name string
+			op   *Operation
+		}{
+			{"GET", pathItem.Get},
+			{"POST", pathItem.Post},
+			{"PUT", pathItem.Put},
+			{"DELETE", pathItem.Delete},
+			{"PATCH", pathItem.Patch},
+			{"HEAD", pathItem.Head},
+			{"OPTIONS", pathItem.Options},
+		}
+
+		for _, methodInfo := range methodOrder {
+			operation := methodInfo.op
 			if operation == nil {
 				continue
 			}
+			method := methodInfo.name
 
 			req := HttpRequest{
-				ID:        fmt.Sprintf("req-%d", len(requests)),
+				ID:        generateUniqueID(),
 				Name:      operation.Summary,
 				Method:    HttpMethod(method),
 				URL:       path,
@@ -233,4 +320,8 @@ func generateFormDataFields(schema *Schema) []KeyValue {
 
 func ReadFileContent(reader io.Reader) ([]byte, error) {
 	return io.ReadAll(reader)
+}
+
+func generateUniqueID() string {
+	return uuid.New().String()
 }
