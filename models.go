@@ -25,19 +25,19 @@ type KeyValue struct {
 type BodyType string
 
 const (
-	BodyNone        BodyType = "none"
-	BodyJSON        BodyType = "json"
-	BodyFormData    BodyType = "form-data"
-	BodyURLEncoded  BodyType = "x-www-form-urlencoded"
-	BodyRaw         BodyType = "raw"
-	BodyXML         BodyType = "xml"
-	BodyBinary      BodyType = "binary"
+	BodyNone       BodyType = "none"
+	BodyJSON       BodyType = "json"
+	BodyFormData   BodyType = "form-data"
+	BodyURLEncoded BodyType = "x-www-form-urlencoded"
+	BodyRaw        BodyType = "raw"
+	BodyXML        BodyType = "xml"
+	BodyBinary     BodyType = "binary"
 )
 
 type RequestBody struct {
-	Type       string     `json:"type"`
-	Content    string     `json:"content,omitempty"`
-	FormData   []KeyValue `json:"formData,omitempty"`
+	Type     string     `json:"type"`
+	Content  string     `json:"content,omitempty"`
+	FormData []KeyValue `json:"formData,omitempty"`
 }
 
 type AuthType string
@@ -54,16 +54,16 @@ type Auth struct {
 	Username string   `json:"username,omitempty"`
 	Password string   `json:"password,omitempty"`
 	Token    string   `json:"token,omitempty"`
-	
+
 	// OAuth 2.0 fields
-	OAuth2GrantType  string `json:"oauth2GrantType,omitempty"`  // "authorization_code", "client_credentials", "password"
-	OAuth2AuthUrl    string `json:"oauth2AuthUrl,omitempty"`
-	OAuth2TokenUrl   string `json:"oauth2TokenUrl,omitempty"`
-	OAuth2ClientId   string `json:"oauth2ClientId,omitempty"`
+	OAuth2GrantType    string `json:"oauth2GrantType,omitempty"` // "authorization_code", "client_credentials", "password"
+	OAuth2AuthUrl      string `json:"oauth2AuthUrl,omitempty"`
+	OAuth2TokenUrl     string `json:"oauth2TokenUrl,omitempty"`
+	OAuth2ClientId     string `json:"oauth2ClientId,omitempty"`
 	OAuth2ClientSecret string `json:"oauth2ClientSecret,omitempty"`
-	OAuth2Scope      string `json:"oauth2Scope,omitempty"`
-	OAuth2RedirectUrl string `json:"oauth2RedirectUrl,omitempty"`
-	OAuth2AccessToken string `json:"oauth2AccessToken,omitempty"`
+	OAuth2Scope        string `json:"oauth2Scope,omitempty"`
+	OAuth2RedirectUrl  string `json:"oauth2RedirectUrl,omitempty"`
+	OAuth2AccessToken  string `json:"oauth2AccessToken,omitempty"`
 	OAuth2RefreshToken string `json:"oauth2RefreshToken,omitempty"`
 }
 

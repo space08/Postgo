@@ -36,12 +36,12 @@ export default function AboutDialog({ onClose }: AboutDialogProps) {
           <div className="bg-gray-700 rounded-lg p-4 space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-gray-400">版本号：</span>
-              <span className="text-white font-mono">v1.0.7</span>
+              <span className="text-white font-mono">v1.0.8</span>
             </div>
             <div className="border-t border-gray-600"></div>
             <div className="flex justify-between items-center">
               <span className="text-gray-400">作者：</span>
-              <span className="text-white">老李</span>
+              <span className="text-white">老李（辽宁石油化工大学）</span>
             </div>
             <div className="border-t border-gray-600"></div>
             <div className="flex justify-between items-center">

@@ -121,7 +121,7 @@ func (h *HttpClient) buildURL(baseURL string, params []KeyValue) (string, error)
 	query := parsedURL.Query()
 	for _, param := range params {
 		if param.Enabled {
-			query.Set(param.Key, param.Value)
+			query.Add(param.Key, param.Value)
 		}
 	}
 
@@ -199,16 +199,16 @@ func (h *HttpClient) buildRequestBody(body *RequestBody) (io.Reader, string, err
 						return nil, "", fmt.Errorf("failed to open file %s: %w", field.FilePath, err)
 					}
 					defer file.Close()
-					
+
 					// Get file name from path
 					fileName := filepath.Base(field.FilePath)
-					
+
 					// Create form file
 					part, err := writer.CreateFormFile(field.Key, fileName)
 					if err != nil {
 						return nil, "", err
 					}
-					
+
 					// Copy file content to form
 					_, err = io.Copy(part, file)
 					if err != nil {

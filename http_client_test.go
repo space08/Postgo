@@ -53,6 +53,16 @@ func TestBuildURL(t *testing.T) {
 			hasError: false,
 		},
 		{
+			name:    "Duplicate parameter names are preserved",
+			baseURL: "https://api.example.com/users",
+			params: []KeyValue{
+				{Key: "color", Value: "red", Enabled: true},
+				{Key: "color", Value: "blue", Enabled: true},
+			},
+			expected: "https://api.example.com/users?color=red&color=blue",
+			hasError: false,
+		},
+		{
 			name:    "Disabled parameter",
 			baseURL: "https://api.example.com/users",
 			params: []KeyValue{
