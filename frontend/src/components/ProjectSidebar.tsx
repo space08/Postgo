@@ -17,6 +17,7 @@ interface ProjectSidebarProps {
   onToggleCollapse: () => void;
   onOpenRequest: (request: any) => void;
   onImport: (fileContent: string, format: string, projectId: string, baseURL: string) => void;
+  refreshToken?: number;
 }
 
 export default function ProjectSidebar({
@@ -30,6 +31,7 @@ export default function ProjectSidebar({
   onToggleCollapse,
   onOpenRequest,
   onImport,
+  refreshToken = 0,
 }: ProjectSidebarProps) {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
@@ -185,6 +187,27 @@ export default function ProjectSidebar({
       }
     }
   }, [selectedProjectId, isCollapsed]);
+
+  useEffect(() => {
+    if (isCollapsed) return;
+
+    const projectIds = new Set(expandedProjects);
+    if (selectedProjectId) {
+      projectIds.add(selectedProjectId);
+    }
+    if (projectIds.size === 0) return;
+
+    projectIds.forEach(projectId => {
+      GetProjectRequests(projectId).then(requests => {
+        setProjectRequests(prev => ({
+          ...prev,
+          [projectId]: requests || []
+        }));
+      }).catch(err => {
+        console.error('Failed to refresh project requests:', err);
+      });
+    });
+  }, [refreshToken]);
 
   return (
     <div className={`bg-gray-800 border-r border-gray-700 flex flex-col transition-all duration-300 ${

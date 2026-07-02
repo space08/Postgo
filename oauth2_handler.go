@@ -34,7 +34,7 @@ func (h *OAuth2Handler) GetAuthorizationUrl(auth *Auth) (string, error) {
 		return "", fmt.Errorf("授权URL和客户端ID不能为空")
 	}
 
-	authUrl, err := url.Parse(auth.OAuth2AuthUrl)
+	authUrl, err := url.Parse(normalizeHTTPURL(auth.OAuth2AuthUrl))
 	if err != nil {
 		return "", fmt.Errorf("无效的授权URL: %w", err)
 	}
@@ -42,17 +42,17 @@ func (h *OAuth2Handler) GetAuthorizationUrl(auth *Auth) (string, error) {
 	params := url.Values{}
 	params.Add("client_id", auth.OAuth2ClientId)
 	params.Add("response_type", "code")
-	
+
 	if auth.OAuth2RedirectUrl != "" {
 		params.Add("redirect_uri", auth.OAuth2RedirectUrl)
 	}
-	
+
 	if auth.OAuth2Scope != "" {
 		params.Add("scope", auth.OAuth2Scope)
 	}
-	
+
 	params.Add("state", "postgo_oauth2_state")
-	
+
 	authUrl.RawQuery = params.Encode()
 	return authUrl.String(), nil
 }
@@ -67,12 +67,12 @@ func (h *OAuth2Handler) ExchangeCodeForToken(auth *Auth, code string) (*OAuth2To
 	data.Set("code", code)
 	data.Set("client_id", auth.OAuth2ClientId)
 	data.Set("client_secret", auth.OAuth2ClientSecret)
-	
+
 	if auth.OAuth2RedirectUrl != "" {
 		data.Set("redirect_uri", auth.OAuth2RedirectUrl)
 	}
 
-	return h.requestToken(auth.OAuth2TokenUrl, data)
+	return h.requestToken(normalizeHTTPURL(auth.OAuth2TokenUrl), data)
 }
 
 func (h *OAuth2Handler) GetClientCredentialsToken(auth *Auth) (*OAuth2TokenResponse, error) {
@@ -84,12 +84,12 @@ func (h *OAuth2Handler) GetClientCredentialsToken(auth *Auth) (*OAuth2TokenRespo
 	data.Set("grant_type", "client_credentials")
 	data.Set("client_id", auth.OAuth2ClientId)
 	data.Set("client_secret", auth.OAuth2ClientSecret)
-	
+
 	if auth.OAuth2Scope != "" {
 		data.Set("scope", auth.OAuth2Scope)
 	}
 
-	return h.requestToken(auth.OAuth2TokenUrl, data)
+	return h.requestToken(normalizeHTTPURL(auth.OAuth2TokenUrl), data)
 }
 
 func (h *OAuth2Handler) GetPasswordToken(auth *Auth, username, password string) (*OAuth2TokenResponse, error) {
@@ -103,12 +103,12 @@ func (h *OAuth2Handler) GetPasswordToken(auth *Auth, username, password string) 
 	data.Set("password", password)
 	data.Set("client_id", auth.OAuth2ClientId)
 	data.Set("client_secret", auth.OAuth2ClientSecret)
-	
+
 	if auth.OAuth2Scope != "" {
 		data.Set("scope", auth.OAuth2Scope)
 	}
 
-	return h.requestToken(auth.OAuth2TokenUrl, data)
+	return h.requestToken(normalizeHTTPURL(auth.OAuth2TokenUrl), data)
 }
 
 func (h *OAuth2Handler) RefreshToken(auth *Auth) (*OAuth2TokenResponse, error) {
@@ -122,7 +122,7 @@ func (h *OAuth2Handler) RefreshToken(auth *Auth) (*OAuth2TokenResponse, error) {
 	data.Set("client_id", auth.OAuth2ClientId)
 	data.Set("client_secret", auth.OAuth2ClientSecret)
 
-	return h.requestToken(auth.OAuth2TokenUrl, data)
+	return h.requestToken(normalizeHTTPURL(auth.OAuth2TokenUrl), data)
 }
 
 func (h *OAuth2Handler) requestToken(tokenUrl string, data url.Values) (*OAuth2TokenResponse, error) {
@@ -166,7 +166,7 @@ func (h *OAuth2Handler) requestToken(tokenUrl string, data url.Values) (*OAuth2T
 
 func (a *App) StartOAuth2Flow(auth Auth) error {
 	handler := NewOAuth2Handler(a)
-	
+
 	authUrl, err := handler.GetAuthorizationUrl(&auth)
 	if err != nil {
 		return err
@@ -178,7 +178,7 @@ func (a *App) StartOAuth2Flow(auth Auth) error {
 
 func (a *App) ExchangeOAuth2Code(auth Auth, code string) (Auth, error) {
 	handler := NewOAuth2Handler(a)
-	
+
 	tokenResp, err := handler.ExchangeCodeForToken(&auth, code)
 	if err != nil {
 		return auth, err
@@ -192,7 +192,7 @@ func (a *App) ExchangeOAuth2Code(auth Auth, code string) (Auth, error) {
 
 func (a *App) GetOAuth2ClientCredentialsToken(auth Auth) (Auth, error) {
 	handler := NewOAuth2Handler(a)
-	
+
 	tokenResp, err := handler.GetClientCredentialsToken(&auth)
 	if err != nil {
 		return auth, err
@@ -206,7 +206,7 @@ func (a *App) GetOAuth2ClientCredentialsToken(auth Auth) (Auth, error) {
 
 func (a *App) GetOAuth2PasswordToken(auth Auth, username, password string) (Auth, error) {
 	handler := NewOAuth2Handler(a)
-	
+
 	tokenResp, err := handler.GetPasswordToken(&auth, username, password)
 	if err != nil {
 		return auth, err
@@ -220,7 +220,7 @@ func (a *App) GetOAuth2PasswordToken(auth Auth, username, password string) (Auth
 
 func (a *App) RefreshOAuth2Token(auth Auth) (Auth, error) {
 	handler := NewOAuth2Handler(a)
-	
+
 	tokenResp, err := handler.RefreshToken(&auth)
 	if err != nil {
 		return auth, err

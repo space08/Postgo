@@ -126,7 +126,7 @@ func NewApp() (*App, error) {
 		tabStorage:         tabStorage,
 		activeEnvironment:  environmentStorage.GetActiveEnvironmentID(),
 	}
-	
+
 	LogInfo("Application initialized successfully")
 	return app, nil
 }
@@ -137,30 +137,43 @@ func (a *App) startup(ctx context.Context) {
 
 func (a *App) SendRequest(req HttpRequest) (*HttpResponse, error) {
 	processedReq := req
-	
+
 	scriptRunner := NewScriptRunner(a)
-	
+
 	if processedReq.Scripts != nil && processedReq.Scripts.PreRequest != "" {
 		_, err := scriptRunner.RunPreRequestScript(&processedReq)
 		if err != nil {
 			LogWarn("Pre-request script error: %v", err)
 		}
 	}
-	
+
 	processedReq.URL = a.ReplaceVariables(processedReq.URL)
-	
+
 	for i, header := range processedReq.Headers {
+		processedReq.Headers[i].Key = a.ReplaceVariables(header.Key)
 		processedReq.Headers[i].Value = a.ReplaceVariables(header.Value)
 	}
-	
+
 	for i, param := range processedReq.Params {
+		processedReq.Params[i].Key = a.ReplaceVariables(param.Key)
 		processedReq.Params[i].Value = a.ReplaceVariables(param.Value)
 	}
-	
+
 	if processedReq.Body != nil {
 		processedReq.Body.Content = a.ReplaceVariables(processedReq.Body.Content)
+		for i, field := range processedReq.Body.FormData {
+			processedReq.Body.FormData[i].Key = a.ReplaceVariables(field.Key)
+			processedReq.Body.FormData[i].Value = a.ReplaceVariables(field.Value)
+			processedReq.Body.FormData[i].FilePath = a.ReplaceVariables(field.FilePath)
+		}
 	}
-	
+
+	if processedReq.Auth != nil {
+		a.replaceAuthVariables(processedReq.Auth)
+	}
+
+	processedReq.URL = a.resolveRequestURL(processedReq)
+
 	resp, err := a.httpClient.SendRequest(processedReq)
 	if err != nil {
 		return nil, err
@@ -185,6 +198,30 @@ func (a *App) SendRequest(req HttpRequest) (*HttpResponse, error) {
 	}
 
 	return resp, nil
+}
+
+func (a *App) resolveRequestURL(req HttpRequest) string {
+	baseURL := ""
+	if req.ProjectId != "" && a.projectStorage != nil {
+		if project := a.projectStorage.GetProject(req.ProjectId); project != nil {
+			baseURL = a.ReplaceVariables(project.BaseUrl)
+		}
+	}
+	return resolveRequestURL(req.URL, baseURL)
+}
+
+func (a *App) replaceAuthVariables(auth *Auth) {
+	auth.Username = a.ReplaceVariables(auth.Username)
+	auth.Password = a.ReplaceVariables(auth.Password)
+	auth.Token = a.ReplaceVariables(auth.Token)
+	auth.OAuth2AccessToken = a.ReplaceVariables(auth.OAuth2AccessToken)
+	auth.OAuth2RefreshToken = a.ReplaceVariables(auth.OAuth2RefreshToken)
+	auth.OAuth2AuthUrl = a.ReplaceVariables(auth.OAuth2AuthUrl)
+	auth.OAuth2TokenUrl = a.ReplaceVariables(auth.OAuth2TokenUrl)
+	auth.OAuth2ClientId = a.ReplaceVariables(auth.OAuth2ClientId)
+	auth.OAuth2ClientSecret = a.ReplaceVariables(auth.OAuth2ClientSecret)
+	auth.OAuth2Scope = a.ReplaceVariables(auth.OAuth2Scope)
+	auth.OAuth2RedirectUrl = a.ReplaceVariables(auth.OAuth2RedirectUrl)
 }
 
 func (a *App) GetHistory(limit int) []HistoryRecord {
@@ -244,6 +281,41 @@ func (a *App) GetProjectRequests(projectId string) []HistoryRecord {
 	return result
 }
 
+func (a *App) SaveRequest(req HttpRequest) error {
+	if strings.TrimSpace(req.ID) == "" {
+		req.ID = uuid.New().String()
+	}
+	req.URL = a.stripProjectBaseURL(req)
+	return a.requestStorage.AddRequest(req)
+}
+
+func (a *App) stripProjectBaseURL(req HttpRequest) string {
+	rawURL := strings.TrimSpace(req.URL)
+	if rawURL == "" || req.ProjectId == "" || a.projectStorage == nil {
+		return rawURL
+	}
+
+	project := a.projectStorage.GetProject(req.ProjectId)
+	if project == nil || strings.TrimSpace(project.BaseUrl) == "" {
+		return rawURL
+	}
+
+	baseURL := strings.TrimRight(normalizeHTTPURL(a.ReplaceVariables(project.BaseUrl)), "/")
+	normalizedURL := normalizeHTTPURL(rawURL)
+	if !strings.HasPrefix(normalizedURL, baseURL) {
+		return rawURL
+	}
+
+	relativePath := strings.TrimPrefix(normalizedURL, baseURL)
+	if relativePath == "" {
+		return "/"
+	}
+	if !strings.HasPrefix(relativePath, "/") && !strings.HasPrefix(relativePath, "?") && !strings.HasPrefix(relativePath, "#") {
+		return "/" + relativePath
+	}
+	return relativePath
+}
+
 func (a *App) SaveHeader(header Header) error {
 	return a.headerStorage.SaveHeader(header)
 }
@@ -267,7 +339,7 @@ func (a *App) ImportOpenAPI(fileContent string, format string, projectId string,
 	}
 
 	requests := ConvertOpenAPIToRequests(spec, projectId, baseURL)
-	
+
 	if err := a.requestStorage.AddRequests(requests); err != nil {
 		return nil, fmt.Errorf("failed to save requests: %w", err)
 	}
@@ -342,17 +414,17 @@ func (a *App) ReplaceVariables(text string) string {
 	if a.activeEnvironment == "" {
 		return text
 	}
-	
+
 	env := a.environmentStorage.GetEnvironment(a.activeEnvironment)
 	if env == nil {
 		return text
 	}
-	
+
 	result := text
 	for key, value := range env.Variables {
 		result = strings.ReplaceAll(result, "{{"+key+"}}", value)
 	}
-	
+
 	return result
 }
 
@@ -414,7 +486,6 @@ func (a *App) ExportAllData() (string, error) {
 
 	return path, nil
 }
-
 
 func (a *App) ImportAllData() (string, error) {
 	path, err := runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{

@@ -8,10 +8,12 @@ import (
 )
 
 type TabState struct {
-	ID       string      `json:"id"`
-	Title    string      `json:"title"`
-	Request  HttpRequest `json:"request"`
-	IsActive bool        `json:"isActive"`
+	ID             string            `json:"id"`
+	Title          string            `json:"title"`
+	Request        HttpRequest       `json:"request"`
+	IsActive       bool              `json:"isActive"`
+	PathParams     map[string]string `json:"pathParams,omitempty"`
+	PathParamOrder []string          `json:"pathParamOrder,omitempty"`
 }
 
 type TabStorage struct {

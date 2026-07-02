@@ -125,7 +125,7 @@ func (s *RequestStorage) save() error {
 // ExportProjectRequests exports requests for a given project to a file
 func (s *RequestStorage) ExportProjectRequests(projectId string, filePath string) error {
 	requests := s.GetProjectRequests(projectId)
-	
+
 	data, err := json.MarshalIndent(requests, "", "  ")
 	if err != nil {
 		return fmt.Errorf("failed to marshal requests: %w", err)
@@ -141,9 +141,8 @@ func (s *RequestStorage) ImportRequestsFromContent(projectId string, content []b
 		return fmt.Errorf("failed to unmarshal requests: %w", err)
 	}
 
-	// Override projectId and ensure ID uniqueness if needed (or keep original ID)
-	// For now, we'll keep original ID but update projectId
 	for i := range requests {
+		requests[i].ID = generateUniqueID()
 		requests[i].ProjectId = projectId
 	}
 

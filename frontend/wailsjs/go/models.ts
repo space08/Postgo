@@ -493,6 +493,8 @@ export namespace main {
 	    title: string;
 	    request: HttpRequest;
 	    isActive: boolean;
+	    pathParams?: Record<string, string>;
+	    pathParamOrder?: string[];
 	
 	    static createFrom(source: any = {}) {
 	        return new TabState(source);
@@ -504,6 +506,8 @@ export namespace main {
 	        this.title = source["title"];
 	        this.request = this.convertValues(source["request"], HttpRequest);
 	        this.isActive = source["isActive"];
+	        this.pathParams = source["pathParams"];
+	        this.pathParamOrder = source["pathParamOrder"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {

@@ -10,7 +10,7 @@ func setupTestApp(t *testing.T) *App {
 	tempDir := t.TempDir()
 	os.Setenv("HOME", tempDir)
 	os.Setenv("USERPROFILE", tempDir)
-	
+
 	app := &App{
 		environmentStorage: &EnvironmentStorage{
 			filePath: filepath.Join(tempDir, ".postgo", "environments.json"),
@@ -20,14 +20,14 @@ func setupTestApp(t *testing.T) *App {
 			},
 		},
 	}
-	
+
 	return app
 }
 
 func TestNewScriptRunner(t *testing.T) {
 	app := setupTestApp(t)
 	runner := NewScriptRunner(app)
-	
+
 	if runner == nil {
 		t.Fatal("NewScriptRunner returned nil")
 	}
@@ -39,7 +39,7 @@ func TestNewScriptRunner(t *testing.T) {
 func TestRunPreRequestScript_ConsoleLog(t *testing.T) {
 	app := setupTestApp(t)
 	runner := NewScriptRunner(app)
-	
+
 	req := &HttpRequest{
 		ID:     "test-1",
 		Method: GET,
@@ -48,20 +48,20 @@ func TestRunPreRequestScript_ConsoleLog(t *testing.T) {
 			PreRequest: `console.log("Hello", "World");`,
 		},
 	}
-	
+
 	result, err := runner.RunPreRequestScript(req)
 	if err != nil {
 		t.Fatalf("RunPreRequestScript() error = %v", err)
 	}
-	
+
 	if result == nil {
 		t.Fatal("RunPreRequestScript() result is nil")
 	}
-	
+
 	if len(result.ConsoleOutput) != 1 {
 		t.Errorf("Expected 1 console output, got %d", len(result.ConsoleOutput))
 	}
-	
+
 	if result.ConsoleOutput[0] != "Hello World" {
 		t.Errorf("Expected console output 'Hello World', got '%s'", result.ConsoleOutput[0])
 	}
@@ -69,7 +69,7 @@ func TestRunPreRequestScript_ConsoleLog(t *testing.T) {
 
 func TestRunPreRequestScript_SetEnvironmentVariable(t *testing.T) {
 	app := setupTestApp(t)
-	
+
 	env := Environment{
 		ID:        "test-env",
 		Name:      "Test",
@@ -77,9 +77,9 @@ func TestRunPreRequestScript_SetEnvironmentVariable(t *testing.T) {
 	}
 	app.environmentStorage.SaveEnvironment(env)
 	app.SetActiveEnvironment("test-env")
-	
+
 	runner := NewScriptRunner(app)
-	
+
 	req := &HttpRequest{
 		ID:     "test-1",
 		Method: GET,
@@ -88,17 +88,17 @@ func TestRunPreRequestScript_SetEnvironmentVariable(t *testing.T) {
 			PreRequest: `pm.environment.set("testKey", "testValue");`,
 		},
 	}
-	
+
 	_, err := runner.RunPreRequestScript(req)
 	if err != nil {
 		t.Fatalf("RunPreRequestScript() error = %v", err)
 	}
-	
+
 	updatedEnv := app.environmentStorage.GetEnvironment("test-env")
 	if updatedEnv == nil {
 		t.Fatal("Environment not found")
 	}
-	
+
 	value, ok := updatedEnv.Variables["testKey"]
 	if !ok {
 		t.Error("testKey not found in environment variables")
@@ -111,7 +111,7 @@ func TestRunPreRequestScript_SetEnvironmentVariable(t *testing.T) {
 func TestRunPostRequestScript_StatusAssertion(t *testing.T) {
 	app := setupTestApp(t)
 	runner := NewScriptRunner(app)
-	
+
 	req := &HttpRequest{
 		ID:     "test-1",
 		Method: GET,
@@ -127,26 +127,26 @@ func TestRunPostRequestScript_StatusAssertion(t *testing.T) {
 			`,
 		},
 	}
-	
+
 	resp := &HttpResponse{
 		Status:     200,
 		StatusText: "OK",
 		Body:       `{"message":"success"}`,
 	}
-	
+
 	result, err := runner.RunPostRequestScript(req, resp)
 	if err != nil {
 		t.Fatalf("RunPostRequestScript() error = %v", err)
 	}
-	
+
 	if len(result.Tests) != 1 {
 		t.Fatalf("Expected 1 test result, got %d", len(result.Tests))
 	}
-	
+
 	if !result.Tests[0].Passed {
 		t.Errorf("Expected test to pass, but it failed: %s", result.Tests[0].Error)
 	}
-	
+
 	if result.Tests[0].Name != "Status is 200" {
 		t.Errorf("Expected test name 'Status is 200', got '%s'", result.Tests[0].Name)
 	}
@@ -155,7 +155,7 @@ func TestRunPostRequestScript_StatusAssertion(t *testing.T) {
 func TestRunPostRequestScript_FailedAssertion(t *testing.T) {
 	app := setupTestApp(t)
 	runner := NewScriptRunner(app)
-	
+
 	req := &HttpRequest{
 		ID:     "test-1",
 		Method: GET,
@@ -168,31 +168,138 @@ func TestRunPostRequestScript_FailedAssertion(t *testing.T) {
 			`,
 		},
 	}
-	
+
 	resp := &HttpResponse{
 		Status:     404,
 		StatusText: "Not Found",
 		Body:       `{"error":"not found"}`,
 	}
-	
+
 	result, err := runner.RunPostRequestScript(req, resp)
 	if err != nil {
 		t.Fatalf("RunPostRequestScript() error = %v", err)
 	}
-	
+
 	if len(result.Tests) != 1 {
 		t.Fatalf("Expected 1 test result, got %d", len(result.Tests))
 	}
-	
+
 	if result.Tests[0].Passed {
 		t.Error("Expected test to fail, but it passed")
+	}
+}
+
+func TestRunPostRequestScript_ExpectStatusPasses(t *testing.T) {
+	app := setupTestApp(t)
+	runner := NewScriptRunner(app)
+
+	req := &HttpRequest{
+		ID:     "test-1",
+		Method: GET,
+		URL:    "https://api.example.com",
+		Scripts: &Scripts{
+			PostRequest: `
+				pm.test("Status is 200", function() {
+					expect(pm.response).to.have.status(200);
+				});
+			`,
+		},
+	}
+
+	resp := &HttpResponse{
+		Status:     200,
+		StatusText: "OK",
+		Body:       `{"message":"success"}`,
+	}
+
+	result, err := runner.RunPostRequestScript(req, resp)
+	if err != nil {
+		t.Fatalf("RunPostRequestScript() error = %v", err)
+	}
+	if len(result.Tests) != 1 {
+		t.Fatalf("Expected 1 test result, got %d", len(result.Tests))
+	}
+	if !result.Tests[0].Passed {
+		t.Fatalf("Expected test to pass, got error: %s", result.Tests[0].Error)
+	}
+}
+
+func TestRunPostRequestScript_ExpectEqualFails(t *testing.T) {
+	app := setupTestApp(t)
+	runner := NewScriptRunner(app)
+
+	req := &HttpRequest{
+		ID:     "test-1",
+		Method: GET,
+		URL:    "https://api.example.com",
+		Scripts: &Scripts{
+			PostRequest: `
+				pm.test("Value mismatch", function() {
+					const data = pm.response.json();
+					expect(data.ok).to.equal(false);
+				});
+			`,
+		},
+	}
+
+	resp := &HttpResponse{
+		Status:     200,
+		StatusText: "OK",
+		Body:       `{"ok":true}`,
+	}
+
+	result, err := runner.RunPostRequestScript(req, resp)
+	if err != nil {
+		t.Fatalf("RunPostRequestScript() error = %v", err)
+	}
+	if len(result.Tests) != 1 {
+		t.Fatalf("Expected 1 test result, got %d", len(result.Tests))
+	}
+	if result.Tests[0].Passed {
+		t.Fatal("Expected equality assertion to fail, but it passed")
+	}
+}
+
+func TestRunPostRequestScript_ExpectNotUndefinedPasses(t *testing.T) {
+	app := setupTestApp(t)
+	runner := NewScriptRunner(app)
+
+	req := &HttpRequest{
+		ID:     "test-1",
+		Method: GET,
+		URL:    "https://api.example.com",
+		Scripts: &Scripts{
+			PostRequest: `
+				pm.test("User fields exist", function() {
+					const user = pm.response.json();
+					expect(user.id).to.not.be.undefined;
+				});
+			`,
+		},
+	}
+
+	resp := &HttpResponse{
+		Status:     200,
+		StatusText: "OK",
+		Body:       `{"id":123}`,
+	}
+
+	result, err := runner.RunPostRequestScript(req, resp)
+	if err != nil {
+		t.Fatalf("RunPostRequestScript() error = %v", err)
+	}
+	if len(result.Tests) != 1 {
+		t.Fatalf("Expected 1 test result, got %d", len(result.Tests))
+	}
+	if !result.Tests[0].Passed {
+		t.Fatalf("Expected not undefined assertion to pass, got error: %s", result.Tests[0].Error)
 	}
 }
 
 func TestRunPostRequestScript_JSONParsing(t *testing.T) {
 	app := setupTestApp(t)
 	runner := NewScriptRunner(app)
-	
+
 	req := &HttpRequest{
 		ID:     "test-1",
 		Method: GET,
@@ -204,22 +311,22 @@ func TestRunPostRequestScript_JSONParsing(t *testing.T) {
 			`,
 		},
 	}
-	
+
 	resp := &HttpResponse{
 		Status:     200,
 		StatusText: "OK",
 		Body:       `{"message":"test"}`,
 	}
-	
+
 	result, err := runner.RunPostRequestScript(req, resp)
 	if err != nil {
 		t.Fatalf("RunPostRequestScript() error = %v", err)
 	}
-	
+
 	if len(result.ConsoleOutput) != 1 {
 		t.Fatalf("Expected 1 console output, got %d", len(result.ConsoleOutput))
 	}
-	
+
 	if result.ConsoleOutput[0] != "Message: test" {
 		t.Errorf("Expected 'Message: test', got '%s'", result.ConsoleOutput[0])
 	}
@@ -227,7 +334,7 @@ func TestRunPostRequestScript_JSONParsing(t *testing.T) {
 
 func TestRunPostRequestScript_SaveTokenToEnvironment(t *testing.T) {
 	app := setupTestApp(t)
-	
+
 	env := Environment{
 		ID:        "test-env",
 		Name:      "Test",
@@ -235,9 +342,9 @@ func TestRunPostRequestScript_SaveTokenToEnvironment(t *testing.T) {
 	}
 	app.environmentStorage.SaveEnvironment(env)
 	app.SetActiveEnvironment("test-env")
-	
+
 	runner := NewScriptRunner(app)
-	
+
 	req := &HttpRequest{
 		ID:     "test-1",
 		Method: POST,
@@ -250,23 +357,23 @@ func TestRunPostRequestScript_SaveTokenToEnvironment(t *testing.T) {
 			`,
 		},
 	}
-	
+
 	resp := &HttpResponse{
 		Status:     200,
 		StatusText: "OK",
 		Body:       `{"token":"abc123"}`,
 	}
-	
+
 	result, err := runner.RunPostRequestScript(req, resp)
 	if err != nil {
 		t.Fatalf("RunPostRequestScript() error = %v", err)
 	}
-	
+
 	updatedEnv := app.environmentStorage.GetEnvironment("test-env")
 	if updatedEnv == nil {
 		t.Fatal("Environment not found")
 	}
-	
+
 	token, ok := updatedEnv.Variables["authToken"]
 	if !ok {
 		t.Error("authToken not found in environment variables")
@@ -274,7 +381,7 @@ func TestRunPostRequestScript_SaveTokenToEnvironment(t *testing.T) {
 	if token != "abc123" {
 		t.Errorf("Expected token 'abc123', got '%s'", token)
 	}
-	
+
 	if len(result.ConsoleOutput) < 1 {
 		t.Errorf("Expected at least 1 console output, got %d", len(result.ConsoleOutput))
 	}
@@ -283,7 +390,7 @@ func TestRunPostRequestScript_SaveTokenToEnvironment(t *testing.T) {
 func TestRunPreRequestScript_EmptyScript(t *testing.T) {
 	app := setupTestApp(t)
 	runner := NewScriptRunner(app)
-	
+
 	req := &HttpRequest{
 		ID:     "test-1",
 		Method: GET,
@@ -292,12 +399,12 @@ func TestRunPreRequestScript_EmptyScript(t *testing.T) {
 			PreRequest: "",
 		},
 	}
-	
+
 	result, err := runner.RunPreRequestScript(req)
 	if err != nil {
 		t.Fatalf("RunPreRequestScript() error = %v", err)
 	}
-	
+
 	if result != nil {
 		t.Error("Expected nil result for empty script")
 	}
@@ -306,7 +413,7 @@ func TestRunPreRequestScript_EmptyScript(t *testing.T) {
 func TestRunPreRequestScript_SyntaxError(t *testing.T) {
 	app := setupTestApp(t)
 	runner := NewScriptRunner(app)
-	
+
 	req := &HttpRequest{
 		ID:     "test-1",
 		Method: GET,
@@ -315,16 +422,16 @@ func TestRunPreRequestScript_SyntaxError(t *testing.T) {
 			PreRequest: `console.log("unclosed string`,
 		},
 	}
-	
+
 	result, err := runner.RunPreRequestScript(req)
 	if err == nil {
 		t.Error("Expected error for syntax error in script")
 	}
-	
+
 	if result == nil {
 		t.Error("Expected result with error message")
 	}
-	
+
 	if result != nil && result.Error == "" {
 		t.Error("Expected error message in result")
 	}

@@ -62,6 +62,8 @@ export function SaveEnvironment(arg1:main.Environment):Promise<void>;
 
 export function SaveHeader(arg1:main.Header):Promise<void>;
 
+export function SaveRequest(arg1:main.HttpRequest):Promise<void>;
+
 export function SaveTabsState(arg1:Array<main.TabState>):Promise<void>;
 
 export function SearchHistory(arg1:string):Promise<Array<main.HistoryRecord>>;

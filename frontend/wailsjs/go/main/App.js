@@ -122,6 +122,10 @@ export function SaveHeader(arg1) {
   return window['go']['main']['App']['SaveHeader'](arg1);
 }
 
+export function SaveRequest(arg1) {
+  return window['go']['main']['App']['SaveRequest'](arg1);
+}
+
 export function SaveTabsState(arg1) {
   return window['go']['main']['App']['SaveTabsState'](arg1);
 }

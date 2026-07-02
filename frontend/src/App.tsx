@@ -23,6 +23,7 @@ import {
   GetActiveEnvironment,
   GetSavedTabs,
   SaveTabsState,
+  SaveRequest,
   ExportAllData,
   ImportAllData
 } from "../wailsjs/go/main/App";
@@ -45,6 +46,7 @@ function App() {
   const [showHistory, setShowHistory] = useState(false);
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [projectRequestsRefreshToken, setProjectRequestsRefreshToken] = useState(0);
   const [requestHeight, setRequestHeight] = useState<number>(50);
   const [isDragging, setIsDragging] = useState(false);
   const [headers, setHeaders] = useState<Header[]>([]);
@@ -65,6 +67,8 @@ function App() {
             title: tabState.title,
             request: new main.HttpRequest(tabState.request),
             response: undefined,
+            pathParams: tabState.pathParams || {},
+            pathParamOrder: tabState.pathParamOrder || [],
           }));
           setTabs(restoredTabs);
           const activeTab = savedTabs.find((t: any) => t.isActive);
@@ -142,7 +146,9 @@ function App() {
           id: tab.id,
           title: tab.title,
           request: tab.request,
-          isActive: tab.id === activeTabId
+          isActive: tab.id === activeTabId,
+          pathParams: tab.pathParams || {},
+          pathParamOrder: tab.pathParamOrder || []
         }));
         await SaveTabsState(tabStates);
       } catch (err) {
@@ -421,6 +427,31 @@ function App() {
     ));
   };
 
+  const handleSaveRequest = async () => {
+    const activeTab = tabs.find(tab => tab.id === activeTabId);
+    if (!activeTab) return;
+
+    const requestToSave = new main.HttpRequest({
+      ...activeTab.request,
+      id: activeTab.request.id || `req-${Date.now()}`,
+      name: activeTab.request.name || activeTab.request.url || 'New Request',
+      projectId: activeTab.request.projectId || selectedProjectId || undefined,
+    });
+
+    try {
+      await SaveRequest(requestToSave);
+      setTabs(tabs.map(tab =>
+        tab.id === activeTabId
+          ? { ...tab, request: requestToSave, title: requestToSave.url || requestToSave.name || 'New Request' }
+          : tab
+      ));
+      setProjectRequestsRefreshToken(token => token + 1);
+    } catch (err: any) {
+      console.error('Failed to save request:', err);
+      alert('Failed to save request: ' + err);
+    }
+  };
+
   const handleSend = async () => {
     const activeTab = tabs.find(tab => tab.id === activeTabId);
     if (!activeTab) return;
@@ -437,17 +468,15 @@ function App() {
       let requestToSend = activeTab.request;
       
       let url = activeTab.request.url;
-      url = url.replace(/\/\{[^}]+\}/g, '');
-      
-      if (activeTab.pathParams && activeTab.pathParamOrder && activeTab.pathParamOrder.length > 0) {
-        const pathValues = activeTab.pathParamOrder
-          .map(key => activeTab.pathParams![key])
-          .filter(v => v);
-        
-        if (pathValues.length > 0) {
-          url = url + '/' + pathValues.join('/');
-        }
-      }
+      const pathParams = activeTab.pathParams || {};
+      url = url.replace(/\/\{([^}]+)\}/g, (_match, key) => {
+        const value = pathParams[key];
+        return value ? `/${encodeURIComponent(value)}` : '';
+      });
+      url = url.replace(/\{([^}]+)\}/g, (_match, key) => {
+        const value = pathParams[key];
+        return value ? encodeURIComponent(value) : '';
+      });
       
       if (url !== activeTab.request.url || activeTab.pathParams) {
         requestToSend = new main.HttpRequest({
@@ -710,6 +739,7 @@ function App() {
             onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
             onOpenRequest={handleSelectHistory}
             onImport={handleImport}
+            refreshToken={projectRequestsRefreshToken}
           />
         </div>
         
@@ -720,6 +750,7 @@ function App() {
                 request={activeTab.request}
                 onRequestChange={handleRequestChange}
                 onSend={handleSend}
+                onSave={handleSaveRequest}
                 headers={headers}
                 pathParams={activeTab.pathParams || {}}
                 pathParamOrder={activeTab.pathParamOrder || []}

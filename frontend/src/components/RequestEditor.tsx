@@ -1,4 +1,4 @@
-import { Send, Plus, Trash2, List, Upload } from 'lucide-react';
+import { Send, Plus, Trash2, List, Upload, Save } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { HttpRequest, HttpMethod, KeyValue, Header } from '../types';
 import { main } from '../../wailsjs/go/models';
@@ -8,6 +8,7 @@ interface RequestEditorProps {
   request: HttpRequest;
   onRequestChange: (request: HttpRequest) => void;
   onSend: () => void;
+  onSave?: () => void;
   headers?: Header[];
   pathParams?: { [key: string]: string };
   pathParamOrder?: string[];
@@ -64,7 +65,7 @@ const USER_AGENTS = [
 
 type RequestTabType = 'params' | 'headers' | 'body' | 'auth' | 'scripts';
 
-export default function RequestEditor({ request, onRequestChange, onSend, headers = [], pathParams: externalPathParams = {}, pathParamOrder = [], onPathParamsChange }: RequestEditorProps) {
+export default function RequestEditor({ request, onRequestChange, onSend, onSave, headers = [], pathParams: externalPathParams = {}, pathParamOrder = [], onPathParamsChange }: RequestEditorProps) {
   const [activeTab, setActiveTab] = useState<RequestTabType>('params');
   const [headerSuggestions, setHeaderSuggestions] = useState<string[]>([]);
   const [activeHeaderIndex, setActiveHeaderIndex] = useState<number>(-1);
@@ -83,8 +84,11 @@ export default function RequestEditor({ request, onRequestChange, onSend, header
     return { names, baseUrl };
   };
 
-  const { names: pathParamNames, baseUrl } = extractPathParams(request.url);
-  const currentOrder = pathParamOrder.length > 0 ? pathParamOrder : pathParamNames;
+  const { names: pathParamNames } = extractPathParams(request.url);
+  const currentOrder = [
+    ...pathParamOrder.filter(name => pathParamNames.includes(name)),
+    ...pathParamNames.filter(name => !pathParamOrder.includes(name)),
+  ];
   const pathParamsArray = currentOrder.map(name => ({
     key: name,
     value: externalPathParams[name] || '',
@@ -260,17 +264,25 @@ export default function RequestEditor({ request, onRequestChange, onSend, header
     onSend();
   };
 
+  const handleSave = () => {
+    onSave?.();
+  };
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
         e.preventDefault();
         handleSend();
       }
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's' && onSave) {
+        e.preventDefault();
+        handleSave();
+      }
     };
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [onSend]);
+  }, [onSend, onSave]);
 
   return (
     <div className="flex flex-col h-full bg-gray-900">
@@ -299,7 +311,7 @@ export default function RequestEditor({ request, onRequestChange, onSend, header
             }}
             onBlur={(e) => {
               const url = e.target.value;
-              const { names, baseUrl } = extractPathParams(url);
+              const { names } = extractPathParams(url);
               
               if (names.length > 0 && onPathParamsChange) {
                 const newParams: { [key: string]: string } = {};
@@ -312,6 +324,14 @@ export default function RequestEditor({ request, onRequestChange, onSend, header
             placeholder="Enter request URL"
             className="flex-1 px-3 py-2 bg-gray-800 border border-gray-700 rounded text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+          <button
+            onClick={handleSave}
+            disabled={!onSave}
+            className="px-4 py-2 bg-gray-700 hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded flex items-center gap-2"
+          >
+            <Save size={18} />
+            Save
+          </button>
           <button
             onClick={handleSend}
             className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded flex items-center gap-2"

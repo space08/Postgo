@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"reflect"
 	"strings"
 	"time"
 
@@ -226,45 +227,12 @@ func (sr *ScriptRunner) setupPMObject(vm *goja.Runtime, ctx *PMContext, isPreReq
 
 		pm.Set("response", response)
 
-		expect := vm.NewObject()
-		expect.Set("to", func(call goja.FunctionCall) goja.Value {
-			toObj := vm.NewObject()
-
-			toObj.Set("equal", func(call goja.FunctionCall) goja.Value {
-				if len(call.Arguments) < 1 {
-					panic(vm.NewGoError(fmt.Errorf("expect requires an argument")))
-				}
-				return goja.Undefined()
-			})
-
-			toObj.Set("eql", func(call goja.FunctionCall) goja.Value {
-				if len(call.Arguments) < 1 {
-					panic(vm.NewGoError(fmt.Errorf("expect requires an argument")))
-				}
-				return goja.Undefined()
-			})
-
-			toObj.Set("have", func(call goja.FunctionCall) goja.Value {
-				haveObj := vm.NewObject()
-				haveObj.Set("status", func(call goja.FunctionCall) goja.Value {
-					if len(call.Arguments) < 1 {
-						panic(vm.NewGoError(fmt.Errorf("status requires an argument")))
-					}
-					expectedStatus := int(call.Arguments[0].ToInteger())
-					if ctx.response.Status != expectedStatus {
-						panic(vm.NewGoError(fmt.Errorf("Expected status %d but got %d", expectedStatus, ctx.response.Status)))
-					}
-					return goja.Undefined()
-				})
-				return haveObj
-			})
-
-			return toObj
-		})
-
 		vm.Set("pm", pm)
 		vm.Set("expect", func(call goja.FunctionCall) goja.Value {
-			return expect
+			if len(call.Arguments) < 1 {
+				panic(vm.NewGoError(fmt.Errorf("expect requires an argument")))
+			}
+			return buildExpectObject(vm, call.Arguments[0])
 		})
 	} else {
 		vm.Set("pm", pm)
@@ -311,7 +279,7 @@ func (sr *ScriptRunner) setupPMObject(vm *goja.Runtime, ctx *PMContext, isPreReq
 			ctx.console = append(ctx.console, "pm.headers.save requires 3 arguments: (name, headerKey, value)")
 			return goja.Undefined()
 		}
-		
+
 		// Check if any argument is undefined or null
 		for i, arg := range call.Arguments {
 			if goja.IsUndefined(arg) || goja.IsNull(arg) {
@@ -319,11 +287,11 @@ func (sr *ScriptRunner) setupPMObject(vm *goja.Runtime, ctx *PMContext, isPreReq
 				return goja.Undefined()
 			}
 		}
-		
+
 		name := call.Arguments[0].String()
 		headerKey := call.Arguments[1].String()
 		value := call.Arguments[2].String()
-		
+
 		// Additional validation
 		if value == "" || value == "undefined" || value == "null" {
 			ctx.console = append(ctx.console, fmt.Sprintf("pm.headers.save: invalid value '%s', skipping save", value))
@@ -347,6 +315,91 @@ func (sr *ScriptRunner) setupPMObject(vm *goja.Runtime, ctx *PMContext, isPreReq
 		return goja.Undefined()
 	})
 	pm.Set("headers", headers)
+}
+
+func buildExpectObject(vm *goja.Runtime, actual goja.Value) *goja.Object {
+	expectObj := vm.NewObject()
+	toObj := vm.NewObject()
+	populateAssertionObject(vm, toObj, actual, false, true)
+	expectObj.Set("to", toObj)
+	return expectObj
+}
+
+func populateAssertionObject(vm *goja.Runtime, obj *goja.Object, actual goja.Value, negate bool, includeNot bool) {
+	obj.Set("equal", func(call goja.FunctionCall) goja.Value {
+		if len(call.Arguments) < 1 {
+			panic(vm.NewGoError(fmt.Errorf("equal requires an argument")))
+		}
+		ok := actual.StrictEquals(call.Arguments[0])
+		assertScriptCondition(vm, ok, negate, "Expected %s to equal %s", actual.String(), call.Arguments[0].String())
+		return goja.Undefined()
+	})
+
+	obj.Set("eql", func(call goja.FunctionCall) goja.Value {
+		if len(call.Arguments) < 1 {
+			panic(vm.NewGoError(fmt.Errorf("eql requires an argument")))
+		}
+		ok := reflect.DeepEqual(actual.Export(), call.Arguments[0].Export())
+		assertScriptCondition(vm, ok, negate, "Expected %s to deeply equal %s", actual.String(), call.Arguments[0].String())
+		return goja.Undefined()
+	})
+
+	haveObj := vm.NewObject()
+	haveObj.Set("status", func(call goja.FunctionCall) goja.Value {
+		if len(call.Arguments) < 1 {
+			panic(vm.NewGoError(fmt.Errorf("status requires an argument")))
+		}
+		actualStatus, ok := statusFromValue(vm, actual)
+		if !ok {
+			panic(vm.NewGoError(fmt.Errorf("Expected value to have a status code")))
+		}
+		expectedStatus := int(call.Arguments[0].ToInteger())
+		assertScriptCondition(vm, actualStatus == expectedStatus, negate, "Expected status %d but got %d", expectedStatus, actualStatus)
+		return goja.Undefined()
+	})
+	obj.Set("have", haveObj)
+
+	beObj := vm.NewObject()
+	defineUndefinedAssertion(vm, beObj, actual, negate)
+	obj.Set("be", beObj)
+
+	if includeNot {
+		notObj := vm.NewObject()
+		populateAssertionObject(vm, notObj, actual, !negate, false)
+		obj.Set("not", notObj)
+	}
+}
+
+func defineUndefinedAssertion(vm *goja.Runtime, obj *goja.Object, actual goja.Value, negate bool) {
+	getter := vm.ToValue(func() goja.Value {
+		assertScriptCondition(vm, goja.IsUndefined(actual), negate, "Expected value to be undefined")
+		return goja.Undefined()
+	})
+	_ = obj.DefineAccessorProperty("undefined", getter, nil, goja.FLAG_TRUE, goja.FLAG_TRUE)
+}
+
+func statusFromValue(vm *goja.Runtime, value goja.Value) (int, bool) {
+	if goja.IsUndefined(value) || goja.IsNull(value) {
+		return 0, false
+	}
+
+	if obj, ok := value.(*goja.Object); ok {
+		code := obj.Get("code")
+		if !goja.IsUndefined(code) && !goja.IsNull(code) {
+			return int(code.ToInteger()), true
+		}
+	}
+
+	return int(value.ToInteger()), true
+}
+
+func assertScriptCondition(vm *goja.Runtime, ok bool, negate bool, format string, args ...interface{}) {
+	if negate {
+		ok = !ok
+	}
+	if !ok {
+		panic(vm.NewGoError(fmt.Errorf(format, args...)))
+	}
 }
 
 func min(a, b int) int {

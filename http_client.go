@@ -29,7 +29,7 @@ func NewHttpClient() *HttpClient {
 func (h *HttpClient) SendRequest(req HttpRequest) (*HttpResponse, error) {
 	startTime := time.Now()
 
-	trimmedURL := strings.TrimSpace(req.URL)
+	trimmedURL := normalizeHTTPURL(req.URL)
 	fullURL, err := h.buildURL(trimmedURL, req.Params)
 	if err != nil {
 		return nil, err
